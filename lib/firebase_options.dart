@@ -41,48 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAiHgOozkHUA0HmBqU-Pp-Y3GuYlorLDzY',
-    appId: '1:1045550339552:web:e5d2977700051083a2c785',
-    messagingSenderId: '1045550339552',
-    projectId: 'coachy-afc9a',
-    authDomain: 'coachy-afc9a.firebaseapp.com',
-    storageBucket: 'coachy-afc9a.firebasestorage.app',
+    apiKey: 'AIzaSyAkkrsEF-ZeZelaE7qiC2f0a_GIwwGLOTs',
+    appId: '1:929336653793:web:d3fe12c8eefc0478ca44a0',
+    messagingSenderId: '929336653793',
+    projectId: 'coachyp-ddae3',
+    authDomain: 'coachyp-ddae3.firebaseapp.com',
+    storageBucket: 'coachyp-ddae3.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDSmpw1EiMKEKOunrWfzkYoDVihVqro_sc',
-    appId: '1:1045550339552:android:5b8ab01a9a8daec0a2c785',
-    messagingSenderId: '1045550339552',
-    projectId: 'coachy-afc9a',
-    storageBucket: 'coachy-afc9a.firebasestorage.app',
+    apiKey: 'AIzaSyCqSFo77c6HXaI4jVS8KLifHd0FRWv7Ur8',
+    appId: '1:929336653793:android:6a0273d42d091646ca44a0',
+    messagingSenderId: '929336653793',
+    projectId: 'coachyp-ddae3',
+    storageBucket: 'coachyp-ddae3.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD-XrOY64gFf5hAvLybfbZI7OuWeuIA5P8',
-    appId: '1:1045550339552:ios:dff3da5fb62c569ea2c785',
-    messagingSenderId: '1045550339552',
-    projectId: 'coachy-afc9a',
-    storageBucket: 'coachy-afc9a.firebasestorage.app',
-    iosClientId: '1045550339552-693l4ng0nq0li7m3lr0m4caisqau0t5d.apps.googleusercontent.com',
-    iosBundleId: 'com.example.coachy',
+    apiKey: 'AIzaSyBr-cEUPqNzUQW9xFBrw3qzhVNdY5SqAFE',
+    appId: '1:929336653793:ios:5cf2a73a73192c1fca44a0',
+    messagingSenderId: '929336653793',
+    projectId: 'coachyp-ddae3',
+    storageBucket: 'coachyp-ddae3.firebasestorage.app',
+    iosBundleId: 'com.example.coachyp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD-XrOY64gFf5hAvLybfbZI7OuWeuIA5P8',
-    appId: '1:1045550339552:ios:dff3da5fb62c569ea2c785',
-    messagingSenderId: '1045550339552',
-    projectId: 'coachy-afc9a',
-    storageBucket: 'coachy-afc9a.firebasestorage.app',
-    iosClientId: '1045550339552-693l4ng0nq0li7m3lr0m4caisqau0t5d.apps.googleusercontent.com',
-    iosBundleId: 'com.example.coachy',
+    apiKey: 'AIzaSyBr-cEUPqNzUQW9xFBrw3qzhVNdY5SqAFE',
+    appId: '1:929336653793:ios:5cf2a73a73192c1fca44a0',
+    messagingSenderId: '929336653793',
+    projectId: 'coachyp-ddae3',
+    storageBucket: 'coachyp-ddae3.firebasestorage.app',
+    iosBundleId: 'com.example.coachyp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAiHgOozkHUA0HmBqU-Pp-Y3GuYlorLDzY',
-    appId: '1:1045550339552:web:d5e8cb752f2271b4a2c785',
-    messagingSenderId: '1045550339552',
-    projectId: 'coachy-afc9a',
-    authDomain: 'coachy-afc9a.firebaseapp.com',
-    storageBucket: 'coachy-afc9a.firebasestorage.app',
+    apiKey: 'AIzaSyAkkrsEF-ZeZelaE7qiC2f0a_GIwwGLOTs',
+    appId: '1:929336653793:web:ff990c9645b0abd0ca44a0',
+    messagingSenderId: '929336653793',
+    projectId: 'coachyp-ddae3',
+    authDomain: 'coachyp-ddae3.firebaseapp.com',
+    storageBucket: 'coachyp-ddae3.firebasestorage.app',
   );
+
 }

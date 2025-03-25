@@ -1,8 +1,10 @@
-import 'package:coachyp/features/auth/presentation/pages/sign_in.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../blocs/colors.dart';
+import '../widgets/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,49 +15,36 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isChecked = false;
+  final email = TextEditingController();
+  final password = TextEditingController();
   bool _obscureText = true;
+  String? emailError;
+  String? passwordError;
 
-@override
-  // void initState() {
-  //   FirebaseAuth.instance
-  // .authStateChanges()
-  // .listen((User? user) {
-  //   if (user == null) {
-  //     print('User is currently signed out!');
-  //   } else {
-  //     print('User is signed in!');
-  //   }
-  // });
-  //   super.initState();
-  // }
-
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Column(
         children: [
-          Container(
-              height: 300,
-              child: Image.asset(
-                "assets/image/spart-club.jpg",
-                height: 250,
-                fit: BoxFit.cover,
-              ),
+          SizedBox(
+            height: 300,
+            child: Image.asset(
+              "assets/image/spart-club.jpg",
+              height: 250,
+              fit: BoxFit.cover,
             ),
-          SingleChildScrollView( 
+          ),
+          SingleChildScrollView(
             child: Column(
               children: [
-                
-                const SizedBox(height: 15), 
+                const SizedBox(height: 15),
                 ShaderMask(
                   shaderCallback: (bounds) {
                     return myLinearGradient().createShader(bounds);
                   },
-                  child: const Text( 
+                  child: const Text(
                     " LOGIN ",
                     style: TextStyle(
                         color: Colors.amberAccent,
@@ -63,47 +52,46 @@ class _LoginState extends State<Login> {
                         fontFamily: 'Jersey15'),
                   ),
                 ),
-                const SizedBox(height: 20), 
-                Padding( 
+                const SizedBox(height: 10),
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        buildLabel("EMAIL"), 
-                        const SizedBox(height: 6), 
+                        buildLabel("EMAIL"),
+                        const SizedBox(height: 6),
                         TextFormField(
-                          controller: _emailController,
+                          controller: email,
                           decoration: InputDecoration(
-                            fillColor: Colors.white, 
-                            filled: true,
-                           hintText: " ENTER YOUR EMAIL",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            )
-                          ), 
-           
+                              fillColor: Colors.white,
+                              filled: true,
+                              hintText: " ENTER YOUR EMAIL",
+                              errorText: emailError,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              )),
                           keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
+                          validator: (email) {
+                            if (email == null || email.isEmpty) {
                               return 'Please enter your EMAIL';
                             }
                             return null;
                           },
                         ),
-                        const SizedBox(height: 17), 
-                        buildLabel("PASSWORD"), 
-                        const SizedBox(height: 6), 
+                        const SizedBox(height: 10),
+                        buildLabel("PASSWORD"),
+                        const SizedBox(height: 6),
                         TextFormField(
-                          controller: _passwordController,
-                          decoration: 
-                          InputDecoration(
-                            fillColor: Colors.white, 
-                            filled: true,
-                            hintText: "ENTER YOUR PASSWORD",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)
-                          )).copyWith( 
+                          controller: password,
+                          decoration: InputDecoration(
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  hintText: "ENTER YOUR PASSWORD",
+                                  errorText: passwordError,
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20)))
+                              .copyWith(
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureText
@@ -121,8 +109,7 @@ class _LoginState extends State<Login> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
-                            }
-                            else if (int.parse(value)!=null){
+                            } else if (int.parse(value) != null) {
                               return 'enter your real email';
                             }
                             return null;
@@ -132,34 +119,8 @@ class _LoginState extends State<Login> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Transform.scale(
-                                  scale: 0.9,
-                                  child: Checkbox(
-                                    value: _isChecked,
-                                    onChanged: (bool? newValue) {
-                                      setState(() {
-                                        _isChecked = newValue!;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 4), // Added const
-                                ShaderMask(
-                                  shaderCallback: (bounds) {
-                                    return myLinearGradient().createShader(bounds);
-                                  },
-                                  child: const Text( // Added const
-                                    "Remember me",
-                                    style: TextStyle(
-                                      color: Colors.amberAccent,
-                                      fontSize: 21,
-                                      fontFamily: 'Jersey15',
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            const Row(
+                              children: [],
                             ),
                             ShaderMask(
                               shaderCallback: (bounds) {
@@ -167,7 +128,7 @@ class _LoginState extends State<Login> {
                               },
                               child: GestureDetector(
                                 onTap: () {},
-                                child: const Text( 
+                                child: const Text(
                                   "FORGOT PASSWORD?",
                                   style: TextStyle(
                                     color: Colors.amberAccent,
@@ -179,14 +140,69 @@ class _LoginState extends State<Login> {
                             ),
                           ],
                         ),
-                         SizedBox(height: 10), 
+                        const SizedBox(height: 10),
                         ElevatedButton(
-                          onPressed: () {},
-                          child:  ShaderMask(
+                          onPressed: () async {
+                            setState(() {
+                              if (email.text.isEmpty) {
+                                emailError =
+                                    "This can't be empty"; // Set error message for email
+                              } else {
+                                emailError =
+                                    null; // Clear error if the input is valid
+                              }
+
+                              if (password.text.isEmpty) {
+                                passwordError =
+                                    "This can't be empty"; // Set error message for password
+                              } else {
+                                passwordError = null;
+                              }
+                            });
+
+                            if (emailError == null && passwordError == null) {
+                              try {
+                                final credential = await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                  email: email.text,
+                                  password: password.text,
+
+                                );
+
+                                if (credential.user!.emailVerified) {
+                                  Navigator.of(context)
+                                    .pushReplacementNamed("HomePage");
+                                }
+                                else{
+                                  await AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.warning,
+                                  animType: AnimType.rightSlide,
+                                  title: 'Error',
+                                  desc: 'Please verify your Email',
+                                ).show();
+                                }
+                              } on FirebaseAuthException catch (e) {
+                                await AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.error,
+                                  animType: AnimType.rightSlide,
+                                  title: 'Error',
+                                  desc: 'Email or Password is invalid',
+                                ).show();
+                              }
+                            }
+                          },
+
+                          
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white),
+
+                          child: ShaderMask(
                             shaderCallback: (bounds) {
                               return myLinearGradient().createShader(bounds);
                             },
-                            child: const Text( 
+                            child: const Text(
                               " LOGIN ",
                               style: TextStyle(
                                   color: Colors.amberAccent,
@@ -194,68 +210,88 @@ class _LoginState extends State<Login> {
                                   fontFamily: 'Jersey15'),
                             ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white),
                         ),
-                        SizedBox(height: 15,),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                          ShaderMask(
-                    shaderCallback: (bounds) {
-                      return myLinearGradient().createShader(bounds);
-                    },
-                    child: const Text( 
-                      " Do not have an account ?  ",
-                      style: TextStyle(
-                          color: Colors.amberAccent,
-                          fontSize: 16,
-                          fontFamily: 'Jersey15'),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Sign_in()),
-                          );
-                    },
-                    child: Text("SIGN UP"),
-                  )
-                        ],),
-          
-                         SizedBox(height: 10),
-                         Center(child:ShaderMask(
+                            ShaderMask(
+                              shaderCallback: (bounds) {
+                                return myLinearGradient().createShader(bounds);
+                              },
+                              child: const Text(
+                                " Do not have an account ?  ",
+                                style: TextStyle(
+                                    color: Colors.amberAccent,
+                                    fontSize: 20,
+                                    fontFamily: 'Jersey15'),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pushReplacementNamed("sign_up");
+                              },
+                              child: const Text(
+                                "SIGN UP",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.s2),
+                              ),
+                            )
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+                        const Divider(
+                          color: Colors.white,
+                          indent: 80,
+                          endIndent: 80,
+                        ),
+                        Center(
+                          child: ShaderMask(
                             shaderCallback: (bounds) {
                               return myLinearGradient().createShader(bounds);
                             },
-                            child: const Text( // Added const
+                            child: const Text(
+                              // Added const
                               " OR ",
                               style: TextStyle(
                                   color: Colors.amberAccent,
                                   fontSize: 19,
                                   fontFamily: 'Jersey15'),
                             ),
-                          ),), 
-                         SizedBox(height: 15,),
+                          ),
+                        ),
+                        const Divider(
+                          color: Colors.white,
+                          indent: 80,
+                          endIndent: 80,
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        
                         ElevatedButton(
                           onPressed: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white),
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(FontAwesomeIcons.google), 
-                                const SizedBox(width: 10), 
-                                const Text( 
+                                Icon(FontAwesomeIcons.google),
+                                SizedBox(width: 10),
+                                Text(
                                   "SIGN IN WITH GOOGLE ?",
                                   style: TextStyle(color: Colors.black),
                                 ),
                               ],
                             ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white),
                         ),
                       ],
                     ),
@@ -268,8 +304,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-
- 
-
-  
 }

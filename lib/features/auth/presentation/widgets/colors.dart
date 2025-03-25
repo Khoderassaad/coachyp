@@ -4,7 +4,7 @@ class AppColors {
   static const Color primary = Color(0xFFE2E0E0);
   static const Color secondary = Color(0xFF1E90FF);
   static const Color background = Color.fromRGBO(245, 245, 245, 1);
-
+  static const Color s2 = Color(0xff173054);
     
   
 }
@@ -47,6 +47,26 @@ LinearGradient myLinearGradient() {
       ),
       fillColor: Colors.white,
       filled: true,
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Align(
+      alignment: AlignmentDirectional.bottomStart,
+      child: ShaderMask(
+        shaderCallback: (bounds) {
+          return myLinearGradient().createShader(bounds);
+        },
+        child: Text(
+          text,
+          style: const TextStyle(
+          
+            color: Colors.amberAccent,
+            fontSize: 22,
+            fontFamily: 'Jersey15',
+          ),
+        ),
+      ),
     );
   }
 

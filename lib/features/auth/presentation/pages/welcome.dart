@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../blocs/colors.dart';
+import '../widgets/colors.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
 
 class Welcome extends StatefulWidget {
@@ -24,7 +24,8 @@ class _WelcomeState extends State<Welcome> {
             const end = Offset.zero;
             const curve = Curves.ease;
 
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
             return SlideTransition(
               position: animation.drive(tween),
@@ -45,7 +46,7 @@ class _WelcomeState extends State<Welcome> {
           Container(
             height: 300,
             child: Image.asset(
-              "/Users/m-store/Desktop/coachy/coachy/assets/spart-club.jpg",
+              "assets/image/spart-club.jpg",
               height: 250,
               fit: BoxFit.cover,
             ),
@@ -59,7 +60,8 @@ class _WelcomeState extends State<Welcome> {
                 shaderCallback: (bounds) {
                   return myLinearGradient().createShader(bounds);
                 },
-                child: const Text( // Added const
+                child: const Text(
+                  // Added const
                   " COACHY ",
                   style: TextStyle(
                       color: Colors.amberAccent,
@@ -71,7 +73,8 @@ class _WelcomeState extends State<Welcome> {
                 shaderCallback: (bounds) {
                   return myLinearGradient().createShader(bounds);
                 },
-                child: const Text( // Added const
+                child: const Text(
+                  // Added const
                   " YOUR PATH TO HEALTHIER LIFE ",
                   style: TextStyle(
                       color: Colors.amberAccent,
@@ -80,7 +83,8 @@ class _WelcomeState extends State<Welcome> {
                 ),
               ),
               const SizedBox(height: 240), // Added const
-              const Text( // Added const
+              const Text(
+                // Added const
                 "POWERED BY INFINTE.ZONE",
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
