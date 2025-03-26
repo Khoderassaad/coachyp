@@ -17,24 +17,27 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: AppColors.primary,
       body: Padding(
         padding: EdgeInsets.only(top: 50),
-        child: Container(
-          height: 800,
-          width: 400,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.photo),
-                    ),
-                    SizedBox(
-                      width: 25,
-                    ),
-                    ShaderMask(
+        child: Column(
+          
+          children: [
+           
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              
+              child: Row(
+                
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.person),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Center(
+                    child: ShaderMask(
                       shaderCallback: (bounds) {
                         return myLinearGradient().createShader(bounds);
                       },
@@ -42,25 +45,25 @@ class _HomePageState extends State<HomePage> {
                         " COACHY ",
                         style: TextStyle(
                             color: Colors.amberAccent,
-                            fontSize: 40,
+                            fontSize: 50,
                             fontFamily: 'Jersey15'),
                       ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.notification_add)),
-                      ],
-                    )
-                  ],
-                ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.notification_add)),
+                    ],
+                  )
+                ],
               ),
-              
-            ],
-          ),
-          
+            ),
+            
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
