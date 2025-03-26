@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "coachyp-ddae3"
-  }
+    "default": "coachyp-ddae3",
+    "staging": "coachyp-ddae3"
+  },
+  "targets": {},
+  "etags": {}
 }
