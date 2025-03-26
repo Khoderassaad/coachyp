@@ -250,6 +250,7 @@ class _LoginState extends State<Login> {
                           indent: 80,
                           endIndent: 80,
                         ),
+                        SizedBox(height: 5,),
                         Center(
                           child: ShaderMask(
                             shaderCallback: (bounds) {
@@ -265,6 +266,7 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 5,),
                         const Divider(
                           color: Colors.white,
                           indent: 80,
