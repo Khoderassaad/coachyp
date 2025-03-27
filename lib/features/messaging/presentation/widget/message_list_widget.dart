@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:coachyp/features/messeging/presentation/providers/message_provider.dart';
-
-import 'package:coachyp/features/messeging/domain/entities/Message_entity.dart';
+import '../providers/message_provider.dart';
 
 class MessageListWidget extends StatelessWidget {
   @override

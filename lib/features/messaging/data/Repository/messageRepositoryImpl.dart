@@ -1,6 +1,7 @@
+// lib/features/messaging/data/repositories/message_repository_impl.dart
+import 'package:coachyp/features/messaging/domain/repositories/Messagerepository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coachyp/features/messeging/domain/entities/Message_entity.dart'; // Make sure the path is correct
-import 'package:coachyp/features/messeging/domain/Repositories/MessageRepository.dart';
+import 'package:coachyp/features/messaging/domain/entities/message_entity.dart';
 
 class MessageRepositoryImpl implements MessageRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

@@ -1,5 +1,5 @@
-import 'package:coachyp/features/messeging/domain/entities/Message_entity.dart';
-import 'package:coachyp/features/messeging/domain/Repositories/MessageRepository.dart';
+import 'package:coachyp/features/messaging/domain/entities/Message_entity.dart';
+import 'package:coachyp/features/messaging/domain/Repositories/MessageRepository.dart';
 
 class SendMessageUseCase {
   final MessageRepository messageRepository;
