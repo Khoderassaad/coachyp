@@ -43,7 +43,16 @@ dependencies:
   firebase_auth: ^5.5.1
   font_awesome_flutter: ^10.8.0
   awesome_dialog: ^3.2.1
-  water_drop_nav_bar: ^2.2.2
+  dot_navigation_bar: ^1.0.2
+  google_nav_bar: ^5.0.7
+  line_icons: ^2.0.3
+  firebase_storage: ^12.4.5
+  flutter_native_splash: ^2.4.4
+  flutter_svg: ^2.0.17
+  image_picker: ^1.1.2
+  path_provider: ^2.1.5
+  
+  
 
 dev_dependencies:
   flutter_test:

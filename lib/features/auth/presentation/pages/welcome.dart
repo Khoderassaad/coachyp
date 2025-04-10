@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../widgets/colors.dart';
+import '../../../../colors.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
 
 class Welcome extends StatefulWidget {
