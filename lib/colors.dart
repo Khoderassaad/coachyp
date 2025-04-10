@@ -4,7 +4,8 @@ class AppColors {
   static const Color primary = Color(0xFFE2E0E0);
   static const Color secondary = Color(0xFF1E90FF);
   static const Color background = Color.fromRGBO(245, 245, 245, 1);
-  static const Color s2 = Color(0xff173054);
+  static const Color s2 = Color.fromARGB(255, 37, 69, 113);
+  static const Color bottom = Color(0xff173054);
     
   
 }
@@ -12,11 +13,11 @@ LinearGradient myLinearGradient() {
   return LinearGradient(
     colors: [
       Color(0xff173054),   // Start color
-      Color(0xff4435B4),   // Start color
-      Color(0xff570483),   // Start color
+      Color.fromARGB(255, 83, 69, 196),   // Start color
+      Color.fromARGB(255, 127, 38, 175),   // Start color
          // End color
     ],
-    stops: [0.15, 0.3, 1.0],
+    stops: [0.04, 0.3, 1.4],
   
   );
 }

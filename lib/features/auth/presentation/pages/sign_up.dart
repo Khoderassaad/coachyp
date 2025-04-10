@@ -1,9 +1,9 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:coachyp/features/auth/presentation/widgets/colors.dart';
+import 'package:coachyp/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../widgets/colors.dart';
+import '../../../../colors.dart';
 
 class sign_up extends StatefulWidget {
   const sign_up({super.key});
