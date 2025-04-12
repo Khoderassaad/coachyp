@@ -1,4 +1,5 @@
 import 'package:coachyp/Pages/HomePage.dart';
+import 'package:coachyp/Stripe_Payment/Stripe_keys.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
 import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
 import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
@@ -8,6 +9,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase/firebase_options.dart';
 
 void main() async {
+  Stripe.publishableKey=ApiKeys.publishableKey;
+  
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

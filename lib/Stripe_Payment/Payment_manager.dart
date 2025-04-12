@@ -7,14 +7,18 @@ abstract class PaymentManager {
   static Future<void>makePayment(int amount,String currency)async{
 try {
      String clientSecret=await _getClientSecret((amount*100).toString(), currency);
-
+    await _initializePaymentSheet(clientSecret);
+    await Stripe.instance.presentPaymentSheet();
 } catch (error) {
   throw Exception(error.toString());
 } 
 }
-static Future<void> _initializePaymentSheet(){
-  Stripe.instance.initPaymentSheet(
-    paymentSheetParameters: 
+static Future<void> _initializePaymentSheet(String clientSecret)async{
+ await Stripe.instance.initPaymentSheet(
+    paymentSheetParameters: SetupPaymentSheetParameters(
+      paymentIntentClientSecret: clientSecret ,
+      merchantDisplayName: "omr",
+    )
     );
 }
   static Future<String> _getClientSecret(String amount,String currency)async {
