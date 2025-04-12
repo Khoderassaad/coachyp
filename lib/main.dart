@@ -1,13 +1,23 @@
 import 'package:coachyp/Pages/HomePage.dart';
+<<<<<<< HEAD
+=======
+import 'package:coachyp/Stripe_Payment/Stripe_keys.dart';
+>>>>>>> omr
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
 import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
 import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+<<<<<<< HEAD
+=======
+import 'package:flutter_stripe/flutter_stripe.dart';
+>>>>>>> omr
 import 'firebase/firebase_options.dart';
 
 void main() async {
+  Stripe.publishableKey=ApiKeys.publishableKey;
+  
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
