@@ -1,16 +1,19 @@
 class UserModel {
-final String? id;
+final String uid;
+final String username;
 final String Email;
-final String? password;
+final String password;
 
   UserModel({
-    required this.id,
+    required this.uid,
+    required this.username,
     required this.Email,
     required this.password});
 
 
 toJson(){
   return {
+    "username":username,
     "Email":Email,
     "password":password,
   };
