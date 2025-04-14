@@ -1,5 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
+import 'package:coachyp/features/auth/presentation/pages/User_sign_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../../colors.dart';

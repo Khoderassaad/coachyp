@@ -1,7 +1,7 @@
 import 'package:coachyp/Pages/HomePage.dart';
 import 'package:coachyp/Stripe_Payment/Stripe_keys.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
-import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
+import 'package:coachyp/features/auth/presentation/pages/User_sign_up.dart';
 import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,7 @@ class _COACHYState extends State<COACHY> {
         },
       ),
       routes: {
-        "sign_up": (context) => const sign_up(),
+        "sign_up": (context) => const ClientSignUp(),
         "HomePage": (context) => const HomePage(),
         "Login": (context) => const Login(),
       },

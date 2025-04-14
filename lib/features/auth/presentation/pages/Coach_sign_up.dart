@@ -1,18 +1,21 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:coachyp/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coachyp/features/auth/data/model/repositories_impl/auth_repository_impl.dart';
+import 'package:coachyp/features/auth/domain/Enteties/user_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import '../../../../colors.dart';
 
-class sign_up extends StatefulWidget {
-  const sign_up({super.key});
+import '../../domain/usecases/register_user.dart';
+
+class CoachSignUp extends StatefulWidget {
+  const CoachSignUp({super.key});
 
   @override
-  State<sign_up> createState() => _sign_upState();
+  State<CoachSignUp> createState() => _CoachSignUpState();
 }
 
-class _sign_upState extends State<sign_up> {
+class _CoachSignUpState extends State<CoachSignUp> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController password = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -328,7 +331,7 @@ class _sign_upState extends State<sign_up> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushReplacementNamed("Login");
+                  Navigator.of(context).pushReplacementNamed("sign_up");
                 },
                 child: const Text(
                   "Go back",
