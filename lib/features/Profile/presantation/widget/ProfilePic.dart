@@ -1,9 +1,13 @@
 import 'dart:io';
-import 'package:coachyp/features/Profile/data/DataSources/imagePicker.dart';
-import 'package:coachyp/features/Profile/presantation/pages/Account.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coachyp/colors.dart';
+import 'package:coachyp/features/Profile/presantation/pages/MyAccountPage.dart';
+import 'package:coachyp/features/Profile/presantation/pages/UserProfile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:coachyp/features/Profile/data/DataSources/imagePicker.dart';
+import 'package:coachyp/features/Profile/data/remote/profilestoreage.dart';
 
 class ProfilePic extends StatefulWidget {
   const ProfilePic({Key? key}) : super(key: key);
@@ -13,12 +17,54 @@ class ProfilePic extends StatefulWidget {
 }
 
 class _ProfilePicState extends State<ProfilePic> {
-  File? _imageFile;
-  final Imagepickerr _imagePicker = Imagepickerr(); // Your custom picker class
+  final Imagepickerr _imagePicker = Imagepickerr();
+  final StoreageMethode _storageMethod = StoreageMethode();
+  final user = FirebaseAuth.instance.currentUser;
+
+  File? _localImageFile;
+  String? imageUrl;
+  String? username;
+  String userCollection = 'users';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImageUrl();
+  }
+
+  Future<void> _loadImageUrl() async {
+    if (user == null) return;
+
+    final uid = user!.uid;
+    final usersDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    if (usersDoc.exists) {
+      userCollection = 'users';
+      final data = usersDoc.data();
+      imageUrl = data?['profileImgUrl'];
+      username = data?['username'];
+    } else {
+      final coachesDoc = await FirebaseFirestore.instance.collection('coaches').doc(uid).get();
+      if (coachesDoc.exists) {
+        userCollection = 'coaches';
+        final data = coachesDoc.data();
+        imageUrl = data?['profileImgUrl'];
+        username = data?['username'];
+      }
+    }
+
+    setState(() {});
+  }
 
   Future<void> _pickImage() async {
     try {
-      // Show a dialog to choose between camera or gallery
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("User not logged in.")),
+        );
+        return;
+      }
+
       final source = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
@@ -36,13 +82,37 @@ class _ProfilePicState extends State<ProfilePic> {
         ),
       );
 
-      if (source != null) {
-        final image = await _imagePicker.uploadimg(source);
-        setState(() => _imageFile = image);
+      if (source == null) return;
+
+      final image = await _imagePicker.uploadimg(source);
+      if (image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("No image selected.")),
+        );
+        return;
       }
-    } catch (e) {
+
+      setState(() => _localImageFile = image);
+
+      final uploadedUrl = await _storageMethod.uploadImageToStorage("profilePics", image);
+
+      await FirebaseFirestore.instance
+          .collection(userCollection)
+          .doc(user!.uid)
+          .update({'profileImgUrl': uploadedUrl});
+
+      setState(() {
+        imageUrl = uploadedUrl;
+        _localImageFile = null;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to pick image: ${e.toString()}")),
+        const SnackBar(content: Text("Profile image updated")),
+      );
+    } catch (e) {
+      print("Error picking/uploading image: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed: ${e.toString()}")),
       );
     }
   }
@@ -59,11 +129,13 @@ class _ProfilePicState extends State<ProfilePic> {
             clipBehavior: Clip.none,
             children: [
               CircleAvatar(
-                backgroundImage: _imageFile != null
-                    ? FileImage(_imageFile!)
-                    : const NetworkImage(
-                        "https://i.postimg.cc/0jqKB6mS/Profile-Image.png",
-                      ) as ImageProvider,
+                backgroundImage: _localImageFile != null
+                    ? FileImage(_localImageFile!)
+                    : (imageUrl != null
+                        ? NetworkImage(imageUrl!)
+                        : const NetworkImage(
+                            "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"))
+                        as ImageProvider,
               ),
               Positioned(
                 right: -16,
@@ -88,7 +160,22 @@ class _ProfilePicState extends State<ProfilePic> {
             ],
           ),
         ),
+        const SizedBox(height: 12),
+        ShaderMask(
+                shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
+                child: Text(
+          username ?? 'Loading...',
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Jersey15',
+            color: Colors.black87,
+          ),
+        ),
+              ),
       ],
     );
   }
 }
+
+        

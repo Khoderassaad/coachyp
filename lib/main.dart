@@ -47,7 +47,7 @@ class _COACHYState extends State<COACHY> {
         future: Future.delayed(const Duration(seconds: 2)), // Splash duration
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const HomePage(); // Show splash screen
+            return const Welcome(); // Show splash screen
           }
           
           // Check auth state after splash

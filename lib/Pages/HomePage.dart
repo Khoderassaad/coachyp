@@ -1,7 +1,7 @@
 import 'package:coachyp/Pages/Notifications.dart';
 import 'package:coachyp/Pages/Search.dart';
 import 'package:coachyp/Pages/Userhome.dart';
-import 'package:coachyp/features/Profile/presantation/pages/Account.dart';
+import 'package:coachyp/features/Profile/presantation/pages/UserProfile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';

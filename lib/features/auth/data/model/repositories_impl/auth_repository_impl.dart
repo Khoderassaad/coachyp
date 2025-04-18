@@ -32,9 +32,14 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     await firestore
-        .collection('users')
-        .doc(credential.user!.uid)
-        .set(userModel.toMap());
+    .collection('users')
+    .doc(credential.user!.uid)
+    .set({
+      ...userModel.toMap(),
+      'email': user.email,
+      'password': password, // ⚠️ Don't use in production
+    });
+
   }
   @override
   Future<void> registerCoachWithDocument(UserEntity user, File documentFile) async {
@@ -49,15 +54,17 @@ class AuthRepositoryImpl implements AuthRepository {
   await storageRef.putFile(documentFile);
   final documentUrl = await storageRef.getDownloadURL();
 
-  await FirebaseFirestore.instance.collection('coaches').doc(credential.user!.uid).set({
-    'uid': credential.user!.uid,
-    'email': user.email,
-    'username': user.username,
-    'role': user.role,
-    'status': user.status,
-    'documentUrl': documentUrl,
-    'createdAt': FieldValue.serverTimestamp(),
-  });
+ await FirebaseFirestore.instance.collection('coaches').doc(credential.user!.uid).set({
+  'uid': credential.user!.uid,
+  'email': user.email,
+  'password': user.password, // ⚠️ Don't use in production
+  'username': user.username,
+  'role': user.role,
+  'status': 'pending',
+  'documentUrl': documentUrl,
+  'createdAt': FieldValue.serverTimestamp(),
+});
+
 
   await FirebaseAuth.instance.currentUser?.sendEmailVerification();
 }
@@ -70,11 +77,22 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     final user = credential.user!;
+    final userDoc = await firestore.collection('users').doc(user.uid).get();
+    final userData = userDoc.data();
+
+    if (userData != null && userData['role'] == 'coach' && userData['status'] == 'pending') {
+      throw FirebaseAuthException(
+        code: 'account-pending',
+        message: 'Your coach account is pending approval by the admin.',
+      );
+    }
+
     return UserEntity(
       email: user.email ?? '',
-      username: '',
-      role: '',
-      status: '', password: '',
+      username: userData?['username'] ?? '',
+      role: userData?['role'] ?? '',
+      status: userData?['status'] ?? '',
+      password: '',
     );
   }
 }

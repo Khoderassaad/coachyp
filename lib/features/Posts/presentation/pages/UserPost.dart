@@ -1,179 +1,131 @@
-import 'package:coachyp/colors.dart';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
-class Userpost extends StatelessWidget {
-  final String name;
-  final String sportcoach;
-  final String imagepath;
-  final String desc;
+class CreatePostPage extends StatefulWidget {
+  const CreatePostPage({super.key});
 
-  const Userpost(
-      {super.key, required this.name,
-      required this.imagepath,
-      required this.desc,
-      required this.sportcoach});
+  @override
+  State<CreatePostPage> createState() => _CreatePostPageState();
+}
+
+class _CreatePostPageState extends State<CreatePostPage> {
+  final TextEditingController _descriptionController = TextEditingController();
+  File? _selectedImage;
+  bool _isLoading = false;
+
+  Future<void> _pickImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
+  }
+
+  Future<void> _submitPost() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final uid = user.uid;
+    final description = _descriptionController.text.trim();
+
+    if (description.isEmpty && _selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please add text or image")));
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    String? imageUrl;
+
+    if (_selectedImage != null) {
+      final imageId = const Uuid().v4();
+      final ref = FirebaseStorage.instance.ref().child("post_images/$uid/$imageId.jpg");
+      await ref.putFile(_selectedImage!);
+      imageUrl = await ref.getDownloadURL();
+    }
+
+    final postId = const Uuid().v4();
+
+    await FirebaseFirestore.instance.collection('posts').doc(postId).set({
+      "postId": postId,
+      "authorId": uid,
+      "username": user.displayName ?? "Anonymous",
+      "description": description,
+      "photoUrl": imageUrl,
+      "likes": [],
+      "createdAt": FieldValue.serverTimestamp(),
+    });
+
+    setState(() {
+      _descriptionController.clear();
+      _selectedImage = null;
+      _isLoading = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Post created!")));
+    Navigator.of(context).pop(); // optional: go back
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(6.0),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(.0),
-            child: Container(
-               height: 370,
-              width: 420,
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(20),
-                // Adjust radius as needed
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Create Post"),
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              controller: _descriptionController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: "Write something...",
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              // ignore: sort_child_properties_last
-              child: Column(
+            ),
+            const SizedBox(height: 10),
+            if (_selectedImage != null)
+              Stack(
                 children: [
-                  SizedBox(
-                    height: 340,
-                    width: 420,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 70,
-                                    height: 70,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.black38,
-                                        shape: BoxShape.circle),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          name,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          sportcoach,
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                             const Icon(
-                                LineIcons.verticalEllipsis,
-                                color: Colors.black87,
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: RichText(
-                              text: TextSpan(
-                                  text: desc,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold))),
-                        ),
-                        Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: SizedBox(
-                                width: 340,
-                                height: 350,
-                                child: Image.asset(
-                                  imagepath,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            )),
-                            Container(
-                    height: 60,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
-                            child: Container(
-                              width: 395,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: AppColors.s2,
-                                borderRadius: BorderRadius.circular(
-                                    12), // Adjust radius as needed
-                              ),
-                              child: const Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add,color: AppColors.background,),
-                                    Text(
-                                      "Book Session",
-                                      style: TextStyle(
-                                        color: AppColors.background,
-                                        fontSize: 20,
-                                        fontFamily: 'Jersey15',
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )),
-                      ],
+                  Image.file(_selectedImage!, height: 200, fit: BoxFit.cover),
+                  Positioned(
+                    right: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      onPressed: () => setState(() => _selectedImage = null),
                     ),
                   ),
-                      ],
-                      
-                    ),
-                  ),
-                  // const Divider(),
-                  
-                  const SizedBox(
-                    width: 4,
-                  )
                 ],
               ),
-             
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.photo_library),
+                  onPressed: _pickImage,
+                ),
+                const Spacer(),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _submitPost,
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Post"),
+                ),
+              ],
             ),
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: Icon(
-                    Icons.favorite,
-                    size: 15,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Icon(
-                  Icons.share,
-                  size: 15,
-                ),
-              )
-            ],
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

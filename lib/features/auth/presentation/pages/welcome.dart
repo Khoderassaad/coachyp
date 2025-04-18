@@ -18,79 +18,67 @@ class _WelcomeState extends State<Welcome> {
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => Login(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0); // Start from right
-            const end = Offset.zero;
-            const curve = Curves.ease;
-
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
+          pageBuilder: (_, __, ___) => const Login(),
+          transitionsBuilder: (_, animation, __, child) {
+            final tween = Tween(begin: const Offset(1, 0), end: Offset.zero)
+                .chain(CurveTween(curve: Curves.easeOut));
+            return SlideTransition(position: animation.drive(tween), child: child);
           },
         ),
       );
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: null,
-      body: Column(
-        children: [
-          Container(
-            height: 300,
-            child: Image.asset(
-              "assets/image/spart-club.jpg",
-              height: 250,
-              fit: BoxFit.cover,
+      body: SafeArea(
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                "assets/image/spart-club.jpg",
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const SizedBox(height: 160), // Added const
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ShaderMask(
-                shaderCallback: (bounds) {
-                  return myLinearGradient().createShader(bounds);
-                },
-                child: const Text(
-                  // Added const
-                  " COACHY ",
-                  style: TextStyle(
-                      color: Colors.amberAccent,
-                      fontSize: 60,
-                      fontFamily: 'Jersey15'),
+            const SizedBox(height: 100),
+            ShaderMask(
+              shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
+              child: const Text(
+                "COACHY",
+                style: TextStyle(
+                  color: Colors.amberAccent,
+                  fontSize: 60,
+                  fontFamily: 'Jersey15',
                 ),
               ),
-              ShaderMask(
-                shaderCallback: (bounds) {
-                  return myLinearGradient().createShader(bounds);
-                },
-                child: const Text(
-                  // Added const
-                  " YOUR PATH TO HEALTHIER LIFE ",
-                  style: TextStyle(
-                      color: Colors.amberAccent,
-                      fontSize: 20,
-                      fontFamily: 'Jersey15'),
+            ),
+            const SizedBox(height: 10),
+            ShaderMask(
+              shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
+              child: const Text(
+                "YOUR PATH TO HEALTHIER LIFE",
+                style: TextStyle(
+                  color: Colors.amberAccent,
+                  fontSize: 20,
+                  fontFamily: 'Jersey15',
                 ),
               ),
-              const SizedBox(height: 240), // Added const
-              const Text(
-                // Added const
+            ),
+            const Spacer(),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 20.0),
+              child: Text(
                 "POWERED BY INFINTE.ZONE",
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
