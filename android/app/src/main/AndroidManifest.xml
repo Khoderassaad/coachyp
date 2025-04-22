@@ -1,8 +1,23 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.coachyp"> <!-- Make sure this matches your actual package name -->
+
+    <!-- Required for FCM to receive messages -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Optional: Only if you need to handle tasks after device reboot based on notifications -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- Optional: Keeps the processor from sleeping when a message is received (usually handled by SDK) -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Optional: Required for vibrating feedback on notifications -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:label="coachyp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -24,18 +39,66 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Add this intent filter IF you want to handle notification taps -->
+            <!-- when using the flutter_local_notifications package and need -->
+            <!-- to bring the existing activity to the front. -->
+            <!-- Often needed if you handle notification taps with local_notifications -->
+            <intent-filter>
+                <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+
+        <!-- START: FCM Customization Metadata -->
+
+        <!-- Set the default notification icon.
+             Replace 'notification_icon' with the actual name of your icon file
+             (without extension) placed in the 'res/drawable' folders.
+             It's recommended to use a simple white/transparent icon.
+             Using ic_launcher works but might not look ideal. -->
+        <meta-data
+          android:name="com.google.firebase.messaging.default_notification_icon"
+          android:resource="@drawable/ic_stat_notification" /> <!-- CHANGE 'ic_stat_notification' TO YOUR ICON -->
+
+        <!-- Set the default notification color.
+             Replace 'notification_color' with the name of your color resource
+             defined in 'res/values/colors.xml'. -->
+        <meta-data
+          android:name="com.google.firebase.messaging.default_notification_color"
+          android:resource="@color/notification_color" /> <!-- DEFINE this color in colors.xml -->
+
+        <!-- Set the default notification channel ID for Android 8.0+.
+             Messages without a channel specified in the payload will use this.
+             Make sure this channel ID matches the one you create in your Flutter code
+             (e.g., using flutter_local_notifications). -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" /> <!-- CHANGE 'high_importance_channel' if your channel ID is different -->
+
+        <!-- END: FCM Customization Metadata -->
+
+
+        <!-- Don't delete the meta-data below. -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-    </application>
-    <!-- Required to query activities that can process text, see:
-         https://developer.android.com/training/package-visibility and
-         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+        <!-- Firebase Messaging Service - Usually added automatically by the library build -->
+        <!-- You generally DON'T need to add this manually if using recent versions -->
+        <!-- of firebase_messaging, as it gets merged into the manifest. -->
+        <!-- <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> -->
+
+    </application>
+
+    <!-- Required to query activities that can process text -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
