@@ -31,13 +31,10 @@ class AuthRepositoryImpl implements AuthRepository {
       
     );
 
-    await firestore
-    .collection('users')
-    .doc(credential.user!.uid)
-    .set({
+    await firestore.collection('users').doc(credential.user!.uid).set({
       ...userModel.toMap(),
       'email': user.email,
-      'password': password, // ⚠️ Don't use in production
+      
     });
 
   }
@@ -92,7 +89,8 @@ class AuthRepositoryImpl implements AuthRepository {
       username: userData?['username'] ?? '',
       role: userData?['role'] ?? '',
       status: userData?['status'] ?? '',
-      password: '',
+      password: '', 
     );
   }
+  
 }

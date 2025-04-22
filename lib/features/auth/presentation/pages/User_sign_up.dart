@@ -235,7 +235,7 @@ class _ClientSignUpState extends State<ClientSignUp> {
           username: Name.text.trim(),
           role: "user",
           status: "active",
-          password: password.text.trim(),
+          password: password.text.trim(), 
         );
 
         await authRepository.registerUser(userEntity, password.text.trim());

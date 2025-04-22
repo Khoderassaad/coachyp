@@ -12,7 +12,7 @@ class UserEntity {
     required this.role,
     required this.status,
     this.password,
-    this.profileImgUrl,
+    this.profileImgUrl, 
   });
 
   // Convert to Firestore-friendly format
@@ -34,7 +34,7 @@ class UserEntity {
       username: json['username'],
       role: json['role'],
       status: json['status'],
-      profileImgUrl: json['profileImgUrl'],
+      profileImgUrl: json['profileImgUrl'], 
     );
   }
 }

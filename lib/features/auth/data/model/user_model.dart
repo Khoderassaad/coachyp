@@ -7,12 +7,14 @@ class UserModel extends UserEntity {
     required String password,
     required String role,
     required String status,
+   
   }) : super(
           email: email,
           username: username,
           password: password,
           role: role,
           status: status,
+       
         );
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
