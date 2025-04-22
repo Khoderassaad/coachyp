@@ -2,6 +2,7 @@
 
 import 'package:coachyp/Pages/utli/Sportschooser.dart';
 import 'package:coachyp/colors.dart';
+import 'package:coachyp/features/court/presentation/pages/court.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:share_plus/share_plus.dart';
@@ -86,16 +87,24 @@ class _UserhomepageState extends State<Userhomepage> {
           padding: const EdgeInsets.only(left: 10),
           child: IconButton(
             icon: const Icon(LineIcons.cog),
-            onPressed: () {},
+            onPressed: () {
+             
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SportCourtFinder()),
+                  );
+            },
           ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 5.0),
             child: IconButton(
-              icon: const Icon(LineIcons.facebookMessenger),
-              onPressed: () {},
-            ),
+                icon: const Icon(LineIcons.facebookMessenger),
+                onPressed: () {
+                
+                }),
           ),
         ],
       ),
@@ -123,7 +132,8 @@ class _UserhomepageState extends State<Userhomepage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ShaderMask(
-              shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
+              shaderCallback: (bounds) =>
+                  myLinearGradient().createShader(bounds),
               child: const Text(
                 "Posts",
                 style: TextStyle(
@@ -140,8 +150,10 @@ class _UserhomepageState extends State<Userhomepage> {
               itemCount: Username.length,
               itemBuilder: (context, index) {
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -159,11 +171,14 @@ class _UserhomepageState extends State<Userhomepage> {
                               children: [
                                 Text(
                                   Username[index],
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
                                 ),
                                 Text(
                                   sportcoach[index],
-                                  style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                                  style: TextStyle(
+                                      color: Colors.grey[700], fontSize: 14),
                                 ),
                               ],
                             ),
@@ -182,7 +197,9 @@ class _UserhomepageState extends State<Userhomepage> {
                                 likedPosts.contains(index)
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color: likedPosts.contains(index) ? Colors.red : Colors.grey,
+                                color: likedPosts.contains(index)
+                                    ? Colors.red
+                                    : Colors.grey,
                               ),
                               onPressed: () {
                                 setState(() {

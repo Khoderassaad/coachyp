@@ -17,14 +17,7 @@ class _WelcomeState extends State<Welcome> {
     Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const Login(),
-          transitionsBuilder: (_, animation, __, child) {
-            final tween = Tween(begin: const Offset(1, 0), end: Offset.zero)
-                .chain(CurveTween(curve: Curves.easeOut));
-            return SlideTransition(position: animation.drive(tween), child: child);
-          },
-        ),
+        MaterialPageRoute(builder: (_) => const Login()),
       );
     });
   }
@@ -33,51 +26,47 @@ class _WelcomeState extends State<Welcome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      body: SafeArea(
+      body: Center(
         child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                "assets/image/spart-club.jpg",
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 100),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:  [
             ShaderMask(
               shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
-              child: const Text(
+              child: Text(
                 "COACHY",
                 style: TextStyle(
-                  color: Colors.amberAccent,
-                  fontSize: 60,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
                   fontFamily: 'Jersey15',
+                  color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 12),
             ShaderMask(
               shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
-              child: const Text(
-                "YOUR PATH TO HEALTHIER LIFE",
-                style: TextStyle(
-                  color: Colors.amberAccent,
-                  fontSize: 20,
-                  fontFamily: 'Jersey15',
-                ),
-              ),
-            ),
-            const Spacer(),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 20.0),
               child: Text(
-                "POWERED BY INFINTE.ZONE",
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                "Your path to a healthier life",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: const Padding(
+        padding: EdgeInsets.only(bottom: 16),
+        child: Text(
+          "Powered by INFINITE.ZONE",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: Colors.white54,
+          ),
         ),
       ),
     );

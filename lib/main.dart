@@ -9,11 +9,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'firebase/firebase_options.dart';
 
+
+
 void main() async {
   Stripe.publishableKey=ApiKeys.publishableKey;
   
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
+  await Firebase.initializeApp( 
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(COACHY());
@@ -43,7 +45,7 @@ class _COACHYState extends State<COACHY> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder(
+      home:  FutureBuilder(
         future: Future.delayed(const Duration(seconds: 2)), // Splash duration
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
@@ -63,7 +65,10 @@ class _COACHYState extends State<COACHY> {
         "sign_up": (context) => const ClientSignUp(),
         "HomePage": (context) => const HomePage(),
         "Login": (context) => const Login(),
+        
+
       },
+      
     );
   }
 }

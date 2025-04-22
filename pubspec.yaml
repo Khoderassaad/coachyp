@@ -65,6 +65,13 @@ dependencies:
   share_plus: ^10.1.4
   url_launcher: ^6.3.1
   package_info_plus: ^8.3.0
+  stripe_platform_interface: ^11.4.0
+  google_maps_flutter: ^2.10.1
+  geolocator: ^9.0.2
+  intl: ^0.20.2
+  flutter_bloc: ^9.1.0
+ 
+
   
   
 
@@ -111,7 +118,7 @@ flutter:
     - family: Jersey15
       fonts:
         - asset: assets/fonts/Jersey15-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
+        - asset: assets/gif/icon loading GIF.gif
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:

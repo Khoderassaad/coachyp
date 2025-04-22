@@ -91,16 +91,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-      // Logout Button
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async {
-      //     await FirebaseAuth.instance.signOut();
-      //     // ignore: use_build_context_synchronously
-      //     Navigator.of(context)
-      //         .pushNamedAndRemoveUntil("Login", (Route) => false);
-      //   },
-      //   child: const Icon(Icons.exit_to_app_rounded),
-      // ),
+     
     );
   }
 }

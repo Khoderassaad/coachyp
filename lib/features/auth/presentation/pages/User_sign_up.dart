@@ -217,6 +217,7 @@ class _ClientSignUpState extends State<ClientSignUp> {
       ),
     );
   }
+  
 
   Future<void> handleSignUp() async {
     setState(() {

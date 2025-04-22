@@ -219,7 +219,27 @@ class _CoachSignUpState extends State<CoachSignUp> {
     );
   }
 
- Future<void> handleSignUp() async {
+  Future<void> showLoadingDialog(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          child: Center(
+            child: Image.asset(
+              'assets/gif/icon loading GIF.gif',
+              width: 150,
+              height: 150,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> handleSignUp() async {
     setState(() {
       final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
       emailError = !emailRegExp.hasMatch(email.text) ? "Enter a valid email" : null;
@@ -237,8 +257,9 @@ class _CoachSignUpState extends State<CoachSignUp> {
       ).show();
       return;
     }
-  
-    else if (emailError == null && confirmPasswordError == null) {
+
+    if (emailError == null && confirmPasswordError == null) {
+      await showLoadingDialog(context);
       try {
         final user = UserEntity(
           email: email.text.trim(),
@@ -251,6 +272,8 @@ class _CoachSignUpState extends State<CoachSignUp> {
         final usecase = RegisterCoach(authRepository);
         await usecase.call(user, selectedDocument!);
 
+        Navigator.of(context).pop(); // Close loading
+
         await AwesomeDialog(
           context: context,
           dialogType: DialogType.success,
@@ -259,9 +282,9 @@ class _CoachSignUpState extends State<CoachSignUp> {
         ).show();
 
         Navigator.of(context).pushReplacementNamed("Login");
-        
       } on FirebaseAuthException catch (e) {
-         if (e.code == 'email-already-in-use') {
+        Navigator.of(context).pop(); // Close loading
+        if (e.code == 'email-already-in-use') {
           await AwesomeDialog(
             context: context,
             dialogType: DialogType.warning,
@@ -269,7 +292,6 @@ class _CoachSignUpState extends State<CoachSignUp> {
             desc: 'An account already exists for this email.',
           ).show();
         }
-        print("Error: $e");
       }
     }
   }
@@ -279,6 +301,7 @@ class _CoachSignUpState extends State<CoachSignUp> {
     if (result != null && result.files.single.path != null) {
       setState(() {
         selectedDocument = File(result.files.single.path!);
+        fileName = result.files.single.name;
       });
     }
   }

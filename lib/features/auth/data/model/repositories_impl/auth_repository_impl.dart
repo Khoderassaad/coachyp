@@ -57,7 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
  await FirebaseFirestore.instance.collection('coaches').doc(credential.user!.uid).set({
   'uid': credential.user!.uid,
   'email': user.email,
-  'password': user.password, // ⚠️ Don't use in production
+
   'username': user.username,
   'role': user.role,
   'status': 'pending',
