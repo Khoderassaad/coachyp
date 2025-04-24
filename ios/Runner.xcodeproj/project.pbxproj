@@ -116,6 +116,7 @@
 				44C14E4338AC4DD961737527 /* Pods-RunnerTests.release.xcconfig */,
 				1F56464214BC561DF3B4DAD0 /* Pods-RunnerTests.profile.xcconfig */,
 			);
+			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -458,7 +459,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;

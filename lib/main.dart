@@ -1,16 +1,18 @@
 import 'package:coachyp/Pages/HomePage.dart';
 import 'package:coachyp/Pages/firebase_notifications.dart';
+import 'package:coachyp/Stripe_Payment/Stripe_keys.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
 import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
 import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'firebase/firebase_options.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-
 
 void main() async {
+  Stripe.publishableKey=ApiKeys.publishableKey;
+  
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -43,12 +45,8 @@ class _COACHYState extends State<COACHY> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-    // navigatorKey: navigatorKey,
-    
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
-
         future: Future.delayed(const Duration(seconds: 2)), // Splash duration
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {

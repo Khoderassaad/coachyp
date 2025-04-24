@@ -1,4 +1,5 @@
 
+import 'package:coachyp/Stripe_Payment/Payment_manager.dart';
 import 'package:coachyp/features/Profile/presantation/widget/ProfileMenu.dart';
 import 'package:coachyp/features/Profile/presantation/widget/ProfilePic.dart';
 import 'package:coachyp/colors.dart';
@@ -11,6 +12,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
@@ -46,11 +48,13 @@ class ProfileScreen extends StatelessWidget {
             ProfileMenu(
               text: "Help Center",
               icon: "assets/icons/Question mark.svg",
-              press: () {},
+              press: (){},
             ),
             SizedBox(
               height: 230,
+
             ),
+            ElevatedButton(onPressed: ()=>PaymentManager.makePayment(20,"USD"), child: Text("Payment")),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: TextButton(
@@ -90,6 +94,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
+            
           ],
         ),
       ),
