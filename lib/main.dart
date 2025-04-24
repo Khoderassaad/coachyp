@@ -4,14 +4,18 @@ import 'package:coachyp/features/auth/presentation/pages/login.dart';
 import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
 import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'firebase/firebase_options.dart';
+import 'firebase/firebase_options.dart';  
 
-void main() async {
-  Stripe.publishableKey=ApiKeys.publishableKey;
-  
+
+void main() async { 
+  if (!kIsWeb) {
+    Stripe.publishableKey = ApiKeys.publishableKey; // Make sure ApiKeys is imported correctly
+    await Stripe.instance.applySettings();
+  }
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -20,7 +24,7 @@ void main() async {
 }
 
 class COACHY extends StatefulWidget {
-  const COACHY({super.key});
+  const COACHY({super.key});  
 
   @override
   State<COACHY> createState() => _COACHYState();
