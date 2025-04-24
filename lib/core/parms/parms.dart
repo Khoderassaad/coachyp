@@ -5,10 +5,15 @@ class TemplateParams {
 
 class UserParams {
   final String id;
-  UserParams({required this.id});
+  final String email ;
+  final String password ;
+  UserParams({required this.id , required this.email , required this.password});
+
+  
 }
 
 class PostParams {
   final String id;
   PostParams({required this.id});
 }
+ 

@@ -1,7 +1,7 @@
 import 'package:coachyp/Pages/HomePage.dart';
 import 'package:coachyp/Stripe_Payment/Stripe_keys.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
-import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
+// import 'package:coachyp/features/auth/presentation/pages/User_sign_up.dart';
 import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -11,13 +11,12 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'firebase/firebase_options.dart';  
 
 
-void main() async { 
-  if (!kIsWeb) {
-    Stripe.publishableKey = ApiKeys.publishableKey; // Make sure ApiKeys is imported correctly
-    await Stripe.instance.applySettings();
-  }
+
+void main() async {
+  Stripe.publishableKey=ApiKeys.publishableKey;
+  
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
+  await Firebase.initializeApp( 
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(COACHY());
@@ -47,11 +46,11 @@ class _COACHYState extends State<COACHY> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder(
+      home:  FutureBuilder(
         future: Future.delayed(const Duration(seconds: 2)), // Splash duration
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const HomePage(); // Show splash screen
+            return const Welcome(); // Show splash screen
           }
           
           // Check auth state after splash
@@ -64,10 +63,13 @@ class _COACHYState extends State<COACHY> {
         },
       ),
       routes: {
-        "sign_up": (context) => const sign_up(),
+        // "sign_up": (context) => const ClientSignUp(),
         "HomePage": (context) => const HomePage(),
         "Login": (context) => const Login(),
+        
+
       },
+      
     );
   }
 }
