@@ -7,6 +7,8 @@ class UserModel extends UserEntity {
     required String password,
     required String role,
     required String status,
+    required String type,
+    
    
   }) : super(
           email: email,
@@ -14,6 +16,7 @@ class UserModel extends UserEntity {
           password: password,
           role: role,
           status: status,
+         
        
         );
 
@@ -23,7 +26,8 @@ class UserModel extends UserEntity {
       username: map['username'],
       password: '', // Password shouldn't be stored in Firestore
       role: map['role'],
-      status: map['status'],
+      status: map['status'], 
+      type: map['type']
     );
   }
 
@@ -34,6 +38,7 @@ class UserModel extends UserEntity {
       'role': role,
       'status': status,
       'createdAt': DateTime.now().toIso8601String(),
+      'type':type,
     };
   }
 }

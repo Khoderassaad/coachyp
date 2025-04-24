@@ -24,6 +24,7 @@ class _ProfilePicState extends State<ProfilePic> {
   File? _localImageFile;
   String? imageUrl;
   String? username;
+  String? type;
   String userCollection = 'users';
 
   @override
@@ -36,7 +37,8 @@ class _ProfilePicState extends State<ProfilePic> {
     if (user == null) return;
 
     final uid = user!.uid;
-    final usersDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final usersDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     if (usersDoc.exists) {
       userCollection = 'users';
@@ -44,12 +46,14 @@ class _ProfilePicState extends State<ProfilePic> {
       imageUrl = data?['profileImgUrl'];
       username = data?['username'];
     } else {
-      final coachesDoc = await FirebaseFirestore.instance.collection('coaches').doc(uid).get();
+      final coachesDoc =
+          await FirebaseFirestore.instance.collection('coaches').doc(uid).get();
       if (coachesDoc.exists) {
         userCollection = 'coaches';
         final data = coachesDoc.data();
         imageUrl = data?['profileImgUrl'];
         username = data?['username'];
+        type = data?['type'];
       }
     }
 
@@ -94,7 +98,8 @@ class _ProfilePicState extends State<ProfilePic> {
 
       setState(() => _localImageFile = image);
 
-      final uploadedUrl = await _storageMethod.uploadImageToStorage("profilePics", image);
+      final uploadedUrl =
+          await _storageMethod.uploadImageToStorage("profilePics", image);
 
       await FirebaseFirestore.instance
           .collection(userCollection)
@@ -129,13 +134,17 @@ class _ProfilePicState extends State<ProfilePic> {
             clipBehavior: Clip.none,
             children: [
               CircleAvatar(
+                radius: 40,
+                backgroundColor: Colors.grey[300],
                 backgroundImage: _localImageFile != null
                     ? FileImage(_localImageFile!)
-                    : (imageUrl != null
+                    : (imageUrl != null && imageUrl!.isNotEmpty
                         ? NetworkImage(imageUrl!)
-                        : const NetworkImage(
-                            "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"))
-                        as ImageProvider,
+                        : null),
+                child: (_localImageFile == null &&
+                        (imageUrl == null || imageUrl!.isEmpty))
+                    ? const Icon(Icons.person, size: 40, color: Colors.white)
+                    : null,
               ),
               Positioned(
                 right: -16,
@@ -162,20 +171,27 @@ class _ProfilePicState extends State<ProfilePic> {
         ),
         const SizedBox(height: 12),
         ShaderMask(
-                shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
-                child: Text(
-          username ?? 'Loading...',
+          shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
+          child: Text(
+            username ?? '...',
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Jersey15',
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          type ?? 'User',
           style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Jersey15',
+            fontSize: 15,
+            fontWeight: FontWeight.w300,
             color: Colors.black87,
           ),
         ),
-              ),
       ],
     );
   }
 }
-
-        

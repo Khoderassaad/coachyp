@@ -1,6 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coachyp/features/auth/presentation/pages/User_sign_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -83,7 +82,7 @@ class _LoginState extends State<Login> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: handleForgotPassword,
                         child: ShaderMask(
                           shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
                           child: const Text(
@@ -113,7 +112,6 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                    
                     const SizedBox(height: 30),
                     const Divider(color: Colors.white, indent: 60, endIndent: 60),
                     const SizedBox(height: 8),
@@ -212,84 +210,114 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-  
 
- Future<void> handleLogin() async {
-  setState(() {
-    emailError = email.text.isEmpty ? "This can't be empty" : null;
-    passwordError = password.text.isEmpty ? "This can't be empty" : null;
-  });
+  Future<void> handleLogin() async {
+    setState(() {
+      emailError = email.text.isEmpty ? "This can't be empty" : null;
+      passwordError = password.text.isEmpty ? "This can't be empty" : null;
+    });
 
-  if (emailError == null && passwordError == null) {
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email.text.trim(),
-        password: password.text.trim(),
-      );
+    if (emailError == null && passwordError == null) {
+      try {
+        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email.text.trim(),
+          password: password.text.trim(),
+        );
 
-      if (!credential.user!.emailVerified) {
-        await AwesomeDialog(
-          context: context,
-          dialogType: DialogType.warning,
-          title: 'Verify Email',
-          desc: 'Please verify your email before logging in.',
-        ).show();
-        return;
-      }
-
-      final uid = credential.user!.uid;
-
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-      if (userDoc.exists) {
-        Navigator.of(context).pushReplacementNamed("HomePage");
-        return;
-      }
-
-      final coachDoc = await FirebaseFirestore.instance.collection('coaches').doc(uid).get();
-
-      if (coachDoc.exists) {
-        final coachData = coachDoc.data();
-        if (coachData != null && coachData['status'] == 'pending') {
+        if (!credential.user!.emailVerified) {
           await AwesomeDialog(
             context: context,
-            dialogType: DialogType.info,
-            title: 'Account Pending',
-            desc: 'Your account is awaiting admin approval.',
+            dialogType: DialogType.warning,
+            title: 'Verify Email',
+            desc: 'Please verify your email before logging in.',
           ).show();
-
-          await FirebaseAuth.instance.signOut();
           return;
         }
 
-        Navigator.of(context).pushReplacementNamed("HomePage");
-        return;
+        final uid = credential.user!.uid;
+
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+          Navigator.of(context).pushReplacementNamed("HomePage");
+          return;
+        }
+
+        final coachDoc = await FirebaseFirestore.instance.collection('coaches').doc(uid).get();
+        if (coachDoc.exists) {
+          final coachData = coachDoc.data();
+          if (coachData != null && coachData['status'] == 'pending') {
+            await AwesomeDialog(
+              context: context,
+              dialogType: DialogType.info,
+              title: 'Account Pending',
+              desc: 'Your account is awaiting admin approval.',
+            ).show();
+            await FirebaseAuth.instance.signOut();
+            return;
+          }
+          Navigator.of(context).pushReplacementNamed("HomePage");
+          return;
+        }
+
+        await AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          title: 'User Not Found',
+          desc: 'No user data found. Please contact support.',
+        ).show();
+
+      } on FirebaseAuthException {
+        await AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          title: 'Login Failed',
+          desc: 'Invalid email or password.',
+        ).show();
+      } catch (e) {
+        await AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          title: 'Error',
+          desc: 'Something went wrong. Please try again.',
+        ).show();
+      }
+    }
+  }
+
+  Future<void> handleForgotPassword() async {
+    if (email.text.trim().isEmpty) {
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.warning,
+        title: 'Email Required',
+        desc: 'Please enter your email to reset your password.',
+      ).show();
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.text.trim());
+
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        title: 'Reset Email Sent',
+        desc: 'Check your email to reset your password.',
+      ).show();
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Something went wrong.';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No account found with that email.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'Invalid email format.';
       }
 
-      await AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        title: 'User Not Found',
-        desc: 'No user data found. Please contact support.',
-      ).show();
-
-    } on FirebaseAuthException {
-      await AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        title: 'Login Failed',
-        desc: 'Invalid email or password.',
-      ).show();
-    } catch (e) {
       await AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
         title: 'Error',
-        desc: 'Something went wrong. Please try again.',
+        desc: errorMessage,
       ).show();
     }
   }
-}
-
-
 }

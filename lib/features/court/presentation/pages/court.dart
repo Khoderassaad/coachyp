@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:coachyp/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,10 +8,10 @@ import 'package:http/http.dart' as http;
 
 class SportCourtFinder extends StatefulWidget {
   @override
-  _SportCourtFinderState createState() => _SportCourtFinderState();
+  SportCourtFinderState createState() => SportCourtFinderState();
 }
 
-class _SportCourtFinderState extends State<SportCourtFinder> {
+class SportCourtFinderState extends State<SportCourtFinder> {
   GoogleMapController? _mapController; //Controls the Google Map 
   late LatLng _currentPosition; //	Stores the user's current GPS location
   String _selectedSport = 'Football';// 	Current selected sport
@@ -309,13 +310,10 @@ class _SportCourtFinderState extends State<SportCourtFinder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-    icon: Icon(Icons.arrow_back),
-    onPressed: () => Navigator.of(context).pop(), // Pops the current screen
-  ),
-        title: Text('Sport Court Finder'),
+
+        title: Text('Sport Court Finder',style: TextStyle(color: Colors.white),),
         elevation: 0,
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.s2,
       ),
       body: Stack(
         children: [

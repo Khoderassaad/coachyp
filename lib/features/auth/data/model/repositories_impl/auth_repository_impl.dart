@@ -2,7 +2,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coachyp/features/auth/data/model/user_model.dart';
+// import 'package:coachyp/features/auth/data/model/user_model.dart';
 import 'package:coachyp/features/auth/domain/Enteties/user_entity.dart';
 import 'package:coachyp/features/auth/domain/Repo/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +13,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final FirebaseFirestore firestore;
 
   AuthRepositoryImpl(this.firebaseAuth, this.firestore);
+  
+  get profileImgUrl => null;
 
   @override
   Future<void> registerUser(UserEntity user, String password) async {
@@ -23,18 +25,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
     await credential.user!.sendEmailVerification();
 
-    final userModel = UserModel(
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      status: user.role == 'coach' ? 'pending' : user.status, password: '',
+    // final userModel = UserModel(
+    //   email: user.email,
+    //   username: user.username,
+    //   role: user.role,
+    //   status: user.role == 'coach' ? 'pending' : user.status, password: '',
       
-    );
+    // );
 
-    await firestore.collection('users').doc(credential.user!.uid).set({
-      ...userModel.toMap(),
-      'email': user.email,
+    await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
       
+      'email': user.email,
+      'uid': credential.user!.uid,
+      'status':'active',
+      'role':user.role,
+      
+      'profileImgUrl':user.profileImgUrl,
+      'createdAt': FieldValue.serverTimestamp(),
+      'bio':user.bio,
     });
 
   }
@@ -51,14 +59,19 @@ class AuthRepositoryImpl implements AuthRepository {
   await storageRef.putFile(documentFile);
   final documentUrl = await storageRef.getDownloadURL();
 
- await FirebaseFirestore.instance.collection('coaches').doc(credential.user!.uid).set({
+ await FirebaseFirestore.instance
+ .collection('coaches')
+ .doc(credential.user!.uid)
+ .set({
   'uid': credential.user!.uid,
   'email': user.email,
-
+  'bio':user.bio,
   'username': user.username,
   'role': user.role,
   'status': 'pending',
+  'type':user.type,
   'documentUrl': documentUrl,
+  'profileImgUrl':user.profileImgUrl,
   'createdAt': FieldValue.serverTimestamp(),
 });
 
@@ -74,7 +87,10 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     final user = credential.user!;
-    final userDoc = await firestore.collection('users').doc(user.uid).get();
+    final userDoc = await firestore
+    .collection('users')
+    .doc(user.uid)
+    .get();
     final userData = userDoc.data();
 
     if (userData != null && userData['role'] == 'coach' && userData['status'] == 'pending') {

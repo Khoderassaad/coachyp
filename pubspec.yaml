@@ -70,14 +70,23 @@ dependencies:
   geolocator: ^10.0.2
   intl: ^0.20.2
   flutter_bloc: ^9.1.0
+  json_annotation: ^4.9.0
+  equatable: ^2.0.7
+  stream_transform: ^2.1.1
+  table_calendar: ^3.2.0
+
+  
  
 
   
   
 
 dev_dependencies:
+  
   flutter_test:
     sdk: flutter
+  build_runner: ^2.4.5
+  json_serializable: ^6.5.4  
 
 
   # The "flutter_lints" package below contains a set of recommended lints to

@@ -3,11 +3,9 @@ import 'package:coachyp/features/auth/data/model/repositories_impl/auth_reposito
 import 'package:coachyp/features/auth/domain/Enteties/user_entity.dart';
 import 'package:coachyp/features/auth/domain/Repo/auth_repository.dart';
 import 'package:coachyp/features/auth/domain/UseCases/registerCoach.dart';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import '../../../../colors.dart';
@@ -30,6 +28,7 @@ class _CoachSignUpState extends State<CoachSignUp> {
   bool obscureText2 = true;
   String? confirmPasswordError;
   String? emailError;
+  String? selectedCoachType;
 
   File? selectedDocument;
   String? fileName;
@@ -58,14 +57,17 @@ class _CoachSignUpState extends State<CoachSignUp> {
                 ),
               ),
               const SizedBox(height: 20),
-              const SizedBox(height: 10),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     buildLabel("Full Name"),
                     const SizedBox(height: 5),
-                    buildInputField(controller: name, hint: "Enter your full name", icon: Icons.person),
+                    buildInputField(
+                      controller: name,
+                      hint: "Enter your full name",
+                      icon: Icons.person,
+                    ),
                     const SizedBox(height: 15),
                     buildLabel("Email"),
                     const SizedBox(height: 5),
@@ -103,6 +105,34 @@ class _CoachSignUpState extends State<CoachSignUp> {
                         onPressed: () => setState(() => obscureText2 = !obscureText2),
                       ),
                     ),
+                    const SizedBox(height: 15),
+
+                    // Dropdown Section
+                    buildLabel("Select Coach Type"),
+                    const SizedBox(height: 5),
+                    DropdownButtonFormField<String>(
+                      value: selectedCoachType,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCoachType = value;
+                        });
+                      },
+                      validator: (value) => value == null ? 'Please select a coach type' : null,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Football Coach', child: Text('Football Coach')),
+                        DropdownMenuItem(value: 'Bascketball Coach', child: Text('bascketball Coach')),
+                        DropdownMenuItem(value: 'Swimming Coach', child: Text('Swimming Coach')),
+                        DropdownMenuItem(value: 'tennis Coach', child: Text('tennis Coach')),
+                        DropdownMenuItem(value: 'Fitness Coach', child: Text('Fitness Coach')),
+                      ],
+                    ),
+
                     const SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: pickDocument,
@@ -248,6 +278,16 @@ class _CoachSignUpState extends State<CoachSignUp> {
           : null;
     });
 
+    if (selectedCoachType == null) {
+      await AwesomeDialog(
+        context: context,
+        dialogType: DialogType.warning,
+        title: "Coach Type Required",
+        desc: "Please select a type of coaching you provide.",
+      ).show();
+      return;
+    }
+
     if (selectedDocument == null) {
       await AwesomeDialog(
         context: context,
@@ -265,6 +305,7 @@ class _CoachSignUpState extends State<CoachSignUp> {
           email: email.text.trim(),
           username: name.text.trim(),
           password: password.text.trim(),
+          type: selectedCoachType,
           role: "coach",
           status: "pending",
         );

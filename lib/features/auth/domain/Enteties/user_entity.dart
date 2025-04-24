@@ -4,7 +4,10 @@ class UserEntity {
   final String role;
   final String status;
   final String? password; // Only used during registration
-  final String? profileImgUrl; // Optional for profile picture
+  final String? profileImgUrl;
+  final String? type;
+
+  // Optional for profile picture
 
   UserEntity({
     required this.email,
@@ -13,6 +16,7 @@ class UserEntity {
     required this.status,
     this.password,
     this.profileImgUrl, 
+    this.type
   });
 
   // Convert to Firestore-friendly format
@@ -23,6 +27,7 @@ class UserEntity {
       'role': role,
       'status': status,
       'profileImgUrl': profileImgUrl,
+      'type':type,
       // Note: 'password' is excluded to avoid storing it
     };
   }
@@ -35,6 +40,11 @@ class UserEntity {
       role: json['role'],
       status: json['status'],
       profileImgUrl: json['profileImgUrl'], 
+      type: json['type'],
     );
   }
+
+  get bio => null;
+
+ 
 }

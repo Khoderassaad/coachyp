@@ -5,6 +5,7 @@ class UserModel {
   final String password;
   final String? profileImgUrl;
   final String? bio;
+  final String? type;
 
   UserModel({
     required this.uid,
@@ -13,6 +14,7 @@ class UserModel {
     required this.password,
     this.profileImgUrl,
     this.bio,
+    this.type,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class UserModel {
       "password": password,
       "profileImgUrl": profileImgUrl,
       "bio": bio,
+      "type":type
     };
   }
 
@@ -34,6 +37,7 @@ class UserModel {
       password: json["password"],
       profileImgUrl: json["profileImgUrl"],
       bio: json["bio"],
+      type : json ["type"],
     );
   }
 }
