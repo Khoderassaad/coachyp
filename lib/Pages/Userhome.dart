@@ -1,13 +1,18 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:coachyp/Pages/utli/Sportschooser.dart';
+import 'package:coachyp/colors.dart';
+import 'package:coachyp/features/chat/data/search_user_page.dart';
+import 'package:coachyp/features/posts/presentation/pages/UserPost.dart';
+import 'package:coachyp/features/court/presentation/pages/court.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:share_plus/share_plus.dart';
 
-import 'package:coachyp/features/posts/presentation/pages/UserPost.dart';
 import 'package:coachyp/features/posts/domain/entities/post.dart';
 import 'package:coachyp/features/posts/domain/use_cases/fetch_posts.dart';
-import 'package:coachyp/colors.dart';
-import 'package:coachyp/Pages/utli/Sportschooser.dart';
 
 class Userhomepage extends StatefulWidget {
   const Userhomepage({Key? key}) : super(key: key);
@@ -24,6 +29,7 @@ class _UserhomepageState extends State<Userhomepage> {
     "swimming",
     "running",
   ];
+
   static const List<IconData> sportsIcons = [
     Icons.sports_soccer,
     Icons.sports_tennis,
@@ -37,7 +43,6 @@ class _UserhomepageState extends State<Userhomepage> {
   @override
   void initState() {
     super.initState();
-    // Initialize the future to fetch posts
     _postsFuture = Provider.of<FetchPosts>(context, listen: false)();
   }
 
@@ -50,7 +55,7 @@ class _UserhomepageState extends State<Userhomepage> {
         title: ShaderMask(
           shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
           child: const Text(
-            " COACHY ",
+            "COACHY",
             style: TextStyle(
               color: Colors.amberAccent,
               fontSize: 40,
@@ -65,7 +70,12 @@ class _UserhomepageState extends State<Userhomepage> {
         actions: [
           IconButton(
             icon: const Icon(LineIcons.facebookMessenger),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchUserPage()),
+              );
+            },
           ),
         ],
       ),
@@ -98,33 +108,49 @@ class _UserhomepageState extends State<Userhomepage> {
               ),
             ),
           ),
-         Expanded(
-  child: FutureBuilder<List<Post>>(
-    future: _postsFuture,
-    builder: (context, snapshot) {
-      // … loading & error handling …
-      final posts = snapshot.data!;
+          Expanded(
+            child: FutureBuilder<List<Post>>(
+              future: _postsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Loader while fetching posts
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.s2,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  // Error handling
+                  return Center(
+                    child: Text('Error loading posts: ${snapshot.error}'),
+                  );
+                } else if (snapshot.hasData) {
+                  final posts = snapshot.data!;
 
-      return ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          final p = posts[index];
+                  return ListView.builder(
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      final p = posts[index];
 
-          // ← Add your print here to verify the URL
-          print('Rendering post image URL: ${p.imageUrl}');
+                      print('Rendering post image URL: ${p.imageUrl}');
 
-          return Userpost(
-            name: p.coachId,
-            imagepath: p.imageUrl,   // <-- passes the real URL in here
-            desc: p.description,
-            sportcoach: 'Coach',
-          );
-        },
-      );
-    },
-  ),
-),
-
+                      return Userpost(
+                        name: p.coachId,
+                        imageUrl: p.imageUrl,
+                        desc: p.description,
+                        sportcoach: 'Coach', 
+                      );
+                    },
+                  );
+                } else {
+                  // No posts
+                  return const Center(
+                    child: Text('No posts available'),
+                  );
+                }
+              },
+            ),
+          ),
         ],
       ),
     );

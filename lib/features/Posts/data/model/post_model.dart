@@ -23,10 +23,10 @@ class PostModel extends Post {
 
   return PostModel(
     id: id,
-    coachId: json['coachId'] as String,
-    description: json['description'] as String,
-    imageUrl: url,
-    timestamp: (json['timestamp'] as Timestamp).toDate(),
+    coachId: json['coachId'] as String? ?? '',
+    description: json['description'] as String? ?? '',
+    imageUrl: json['imageUrl'] as String? ?? '',
+    timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     likes: List<String>.from(json['likes'] ?? []),
   );
 }

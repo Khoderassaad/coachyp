@@ -1,8 +1,6 @@
-// lib/features/posts/presentation/pages/create_post_page.dart
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:coachyp/features/posts/data/datasources/post_remote_data_source.dart';
 import 'package:coachyp/features/posts/domain/entities/post.dart';
 import 'package:coachyp/features/posts/domain/use_cases/create_post.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,6 +36,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
     final uid = user.uid;
     final description = _descriptionController.text.trim();
+
     if (description.isEmpty && _pickedFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please add text or image")),
@@ -47,7 +46,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
     setState(() => _isLoading = true);
 
-    // Upload image to Firebase Storage
     String? imageUrl;
     if (_pickedFile != null) {
       final storageRef = FirebaseStorage.instance
@@ -64,7 +62,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
       }
     }
 
-    // Create Post entity
     final post = Post(
       id: const Uuid().v4(),
       coachId: uid,
@@ -74,7 +71,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
       likes: [],
     );
 
-    // Use the CreatePost use case
     try {
       final createPost = Provider.of<CreatePost>(context, listen: false);
       await createPost(post);
@@ -85,7 +81,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to post: \$e")),
+        SnackBar(content: Text("Failed to post: $e")),
       );
     } finally {
       setState(() {
@@ -102,8 +98,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
       appBar: AppBar(
         title: const Text('Create Post'),
         backgroundColor: Colors.deepPurple,
+        centerTitle: true,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -114,58 +111,79 @@ class _CreatePostPageState extends State<CreatePostPage> {
               decoration: InputDecoration(
                 hintText: 'Write something...',
                 filled: true,
-                fillColor: Colors.grey[200],
+                fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             if (_pickedFile != null) ...[
-              if (kIsWeb)
-                FutureBuilder<Uint8List>(
-                  future: _pickedFile!.readAsBytes(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Image.memory(
-                        snapshot.data!,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      );
-                    }
-                    return const SizedBox(
-                      height: 200,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  },
-                )
-              else
-                Image.file(
-                  File(_pickedFile!.path),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  color: Colors.grey[200],
                   height: 200,
-                  fit: BoxFit.cover,
+                  child: kIsWeb
+                      ? FutureBuilder<Uint8List>(
+                          future: _pickedFile!.readAsBytes(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasData) {
+                              return Image.memory(
+                                snapshot.data!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              );
+                            } else {
+                              return const Center(child: Text("Failed to load image"));
+                            }
+                          },
+                        )
+                      : Image.file(
+                          File(_pickedFile!.path),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
                 ),
+              ),
+              const SizedBox(height: 16),
             ],
-            const SizedBox(height: 12),
             Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.photo_library),
+                ElevatedButton.icon(
                   onPressed: _pickImage,
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Add Image'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple.shade200,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
                 const Spacer(),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitPost,
                   style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     backgroundColor: Colors.deepPurple,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: _isLoading
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(color: Colors.white),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Post'),
+                      : const Text(
+                          'Post',
+                          style: TextStyle(fontSize: 16),
+                        ),
                 ),
               ],
             ),
