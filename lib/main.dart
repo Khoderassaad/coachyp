@@ -1,23 +1,68 @@
+// import 'package:coachyp/Pages/HomePage.dart';
+// import 'package:coachyp/Pages/firebase_notifications.dart';
+// import 'package:coachyp/features/Posts/data/datasources/post_remote_data_source.dart';
+// import 'package:coachyp/features/Posts/domain/usecases/fetch_posts.dart';
+// import 'package:coachyp/features/auth/presentation/pages/login.dart';
+// import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
+// import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:provider/provider.dart';
+// import 'firebase/firebase_options.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:coachyp/features/posts/data/datasources/post_remote_data_source_impl.dart';
+// import 'package:coachyp/features/posts/data/repositories/post_repository_impl.dart';
+// import 'package:coachyp/features/posts/domain/repositories/post_repository.dart';
+// import 'package:coachyp/features/posts/domain/use_cases/fetch_posts.dart';
+// import 'package:coachyp/features/posts/domain/usecases/create_post.dart';
+
+
 import 'package:coachyp/Pages/HomePage.dart';
 import 'package:coachyp/Pages/firebase_notifications.dart';
+import 'package:coachyp/features/posts/data/datasources/post_remote_data_source.dart';
+import 'package:coachyp/features/posts/data/datasources/post_remote_data_source_impl.dart';
+import 'package:coachyp/features/posts/data/repositories/post_repository_impl.dart';
+import 'package:coachyp/features/posts/domain/repositories/post_repository.dart';
+import 'package:coachyp/features/posts/domain/use_cases/create_post.dart';
+import 'package:coachyp/features/posts/domain/use_cases/fetch_posts.dart';
 import 'package:coachyp/features/auth/presentation/pages/login.dart';
 import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
-import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
+import 'package:coachyp/features/posts/domain/use_cases/create_post.dart';
+import 'package:coachyp/firebase/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase/firebase_options.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-await FirebaseNotifications().initNotifications();
-  runApp(COACHY());
+  await FirebaseNotifications().initNotifications();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<PostRemoteDataSource>(
+          create: (_) => PostRemoteDataSourceImpl(),
+        ),
+        ProxyProvider<PostRemoteDataSource, PostRepository>(
+          update: (_, remote, __) => PostRepositoryImpl(remote),
+        ),
+        ProxyProvider<PostRepository, FetchPosts>(
+          update: (_, repo, __) => FetchPosts(repo),
+        ),
+        ProxyProvider<PostRepository, CreatePost>(
+          update: (_, repo, __) => CreatePost(repo),
+        ),
+      ],
+      child: const COACHY(),
+    ),
+  );
 }
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class COACHY extends StatefulWidget {

@@ -1,19 +1,28 @@
-// ignore_for_file: non_constant_identifier_names
-
-import 'package:coachyp/features/Profile/presantation/pages/Account.dart';
-import 'package:coachyp/Pages/utli/Sportschooser.dart';
-import 'package:coachyp/features/Posts/presentation/pages/UserPost.dart';
-import 'package:coachyp/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
 
-class Userhomepage extends StatelessWidget {
-  final List Sportschoosing =[
-"soccer",
-"tennis",
-"basketball",
-"swimmimg",
-"running",
+import 'package:coachyp/features/posts/presentation/pages/UserPost.dart';
+import 'package:coachyp/features/posts/domain/entities/post.dart';
+import 'package:coachyp/features/posts/domain/use_cases/fetch_posts.dart';
+import 'package:coachyp/colors.dart';
+import 'package:coachyp/Pages/utli/Sportschooser.dart';
+
+class Userhomepage extends StatefulWidget {
+  const Userhomepage({Key? key}) : super(key: key);
+
+  @override
+  State<Userhomepage> createState() => _UserhomepageState();
+}
+
+class _UserhomepageState extends State<Userhomepage> {
+  final List<String> sportsChoosing = [
+    "soccer",
+    "tennis",
+    "basketball",
+    "swimming",
+    "running",
   ];
   static const List<IconData> sportsIcons = [
     Icons.sports_soccer,
@@ -22,44 +31,20 @@ class Userhomepage extends StatelessWidget {
     LineIcons.swimmingPool,
     LineIcons.running,
   ];
-   final List Username =[
-"Khoder",
-"Ahmad",
-"mohamad",
-"ibho",
-"omr",
-  ];
-   final List sportcoach =[
-"Fitness coach",
-"Soccer coach",
-"Bastketball coach",
-"Running coach",
-"Fitness coach",
 
-  ];
+  Future<List<Post>>? _postsFuture;
 
-  final List description=[
-    "welcome to my flutter app",
-    "welcome to my hhhh lkasdlfknasdkjfad vklashdfkahsdkfj",
-    "welcome to my asdlkfadkslfasdfasdfasdfasdfasdfasdfasdfasdfkaskdf app",
-    "welcome to my asdfjdfndndddjdjdjdjd app",
-    "welcome to my flutter app",
-  ];
-  
-  static const List<String> sportsImages = [
-    'assets/image/spart-club.jpg',
-    'assets/image/spart-club.jpg',
-    'assets/image/spart-club.jpg',
-    'assets/image/spart-club.jpg',
-    'assets/image/spart-club.jpg',
-    
-  ];
-
-   Userhomepage({super.key});
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the future to fetch posts
+    _postsFuture = Provider.of<FetchPosts>(context, listen: false)();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: ShaderMask(
@@ -68,70 +53,80 @@ class Userhomepage extends StatelessWidget {
             " COACHY ",
             style: TextStyle(
               color: Colors.amberAccent,
-              fontSize: 40, // Reduced from 50 to prevent overflow
+              fontSize: 40,
               fontFamily: 'Jersey15',
             ),
           ),
         ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: IconButton(
-            icon: const Icon(
-              LineIcons.cog,
-            ),
-            onPressed: () {
-              // Handle person icon press
-            },
-          ),
+        leading: IconButton(
+          icon: const Icon(LineIcons.cog),
+          onPressed: () {},
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: IconButton(
-              icon: const Icon(
-                LineIcons.facebookMessenger,
-              ),
-              onPressed: () {
-                // Handle search button press
-              },
-            ),
+          IconButton(
+            icon: const Icon(LineIcons.facebookMessenger),
+            onPressed: () {},
           ),
         ],
       ),
       body: Column(
-        
         children: [
-              
-          Padding(padding: const EdgeInsets.only(left: 7,right: 7),
-          child:SizedBox(
-            height: 140,
-            child: ListView.builder(itemCount: Sportschoosing.length, itemBuilder: (context,index){
-              return Sportschooser(sports:Sportschoosing[index],
-              SportIcon: sportsIcons[index],);
-            },
-            scrollDirection: Axis.horizontal,
-            ),
-            
-          ) ,),
-          ShaderMask(
-          shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
-          child: const Text(
-            " Posts ",
-            style: TextStyle(
-              color: Colors.amberAccent,
-              fontSize: 30, // Reduced from 50 to prevent overflow
-              fontFamily: 'Jersey15',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 7),
+            child: SizedBox(
+              height: 140,
+              child: ListView.builder(
+                itemCount: sportsChoosing.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return Sportschooser(
+                    sports: sportsChoosing[index],
+                    SportIcon: sportsIcons[index],
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      Expanded(
-        child: ListView.builder(itemCount: Username.length,itemBuilder: (context,index){
-          return Userpost(name:Username[index],imagepath: sportsImages[index],desc: description[index],sportcoach: sportcoach[index],);
-        }),
-      )
+          ShaderMask(
+            shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
+            child: const Text(
+              " Posts ",
+              style: TextStyle(
+                color: Colors.amberAccent,
+                fontSize: 30,
+                fontFamily: 'Jersey15',
+              ),
+            ),
+          ),
+         Expanded(
+  child: FutureBuilder<List<Post>>(
+    future: _postsFuture,
+    builder: (context, snapshot) {
+      // … loading & error handling …
+      final posts = snapshot.data!;
+
+      return ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (context, index) {
+          final p = posts[index];
+
+          // ← Add your print here to verify the URL
+          print('Rendering post image URL: ${p.imageUrl}');
+
+          return Userpost(
+            name: p.coachId,
+            imagepath: p.imageUrl,   // <-- passes the real URL in here
+            desc: p.description,
+            sportcoach: 'Coach',
+          );
+        },
+      );
+    },
+  ),
+),
+
         ],
       ),
-      backgroundColor: AppColors.primary,
     );
   }
 }
