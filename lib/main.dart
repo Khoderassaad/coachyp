@@ -1,21 +1,4 @@
-// import 'package:coachyp/Pages/HomePage.dart';
-// import 'package:coachyp/Pages/firebase_notifications.dart';
-// import 'package:coachyp/features/Posts/data/datasources/post_remote_data_source.dart';
-// import 'package:coachyp/features/Posts/domain/usecases/fetch_posts.dart';
-// import 'package:coachyp/features/auth/presentation/pages/login.dart';
-// import 'package:coachyp/features/auth/presentation/pages/sign_up.dart';
-// import 'package:coachyp/features/auth/presentation/pages/welcome.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:provider/provider.dart';
-// import 'firebase/firebase_options.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:coachyp/features/posts/data/datasources/post_remote_data_source_impl.dart';
-// import 'package:coachyp/features/posts/data/repositories/post_repository_impl.dart';
-// import 'package:coachyp/features/posts/domain/repositories/post_repository.dart';
-// import 'package:coachyp/features/posts/domain/use_cases/fetch_posts.dart';
-// import 'package:coachyp/features/posts/domain/usecases/create_post.dart';
+
 
 
 import 'package:coachyp/Pages/HomePage.dart';
@@ -40,7 +23,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseNotifications().initNotifications();
+  //await FirebaseNotifications().initNotifications();
 
   runApp(
     MultiProvider(
@@ -66,7 +49,7 @@ void main() async {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class COACHY extends StatefulWidget {
-  const COACHY({super.key});
+  const COACHY({super.key});  
 
   @override
   State<COACHY> createState() => _COACHYState();
