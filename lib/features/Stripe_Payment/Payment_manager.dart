@@ -1,4 +1,4 @@
-import 'package:coachyp/Stripe_Payment/Stripe_keys.dart';
+import 'package:coachyp/features/Stripe_Payment/Stripe_keys.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 

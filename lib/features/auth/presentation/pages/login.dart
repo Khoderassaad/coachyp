@@ -255,6 +255,16 @@ class _LoginState extends State<Login> {
             await FirebaseAuth.instance.signOut();
             return;
           }
+         else if (coachData != null && coachData['status'] == 'disabled') {
+            await AwesomeDialog(
+              context: context,
+              dialogType: DialogType.error,
+              title: 'Account rejected',
+              desc: 'Your account is bin rejected from being a coach.',
+            ).show();
+            await FirebaseAuth.instance.signOut();
+            return;
+          }
           Navigator.of(context).pushReplacementNamed("HomePage");
           return;
         }

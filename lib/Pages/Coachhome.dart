@@ -1,10 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:coachyp/Pages/Sportschooser.dart';
 import 'package:coachyp/colors.dart';
+import 'package:coachyp/features/court/presentation/pages/court.dart';
+import 'package:coachyp/features/chat/data/search_user_page.dart';
+import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CoachHomePage extends StatefulWidget {
-  const CoachHomePage({Key? key}) : super(key: key);
+  const CoachHomePage({super.key});
 
   @override
   State<CoachHomePage> createState() => _CoachHomePageState();
@@ -32,7 +37,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
         _subscriberCount = snapshot.docs.length;
       });
     } catch (e) {
-      debugPrint("Error fetching subscriber count: \$e");
+      debugPrint("Error fetching subscriber count: $e");
     }
   }
 
@@ -40,7 +45,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: AppBar(
+       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: ShaderMask(
           shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
@@ -53,10 +58,30 @@ class _CoachHomePageState extends State<CoachHomePage> {
             ),
           ),
         ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: IconButton(
+            icon: const Icon(LineIcons.cog),
+            onPressed: () {
+             
+
+             
+            },
+          ),
+        ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: Icon(Icons.analytics, color: Colors.white),
+            padding: const EdgeInsets.only(right: 5.0),
+            child: IconButton(
+              icon: const Icon(LineIcons.facebookMessenger),
+              onPressed: () {
+                // Navigate to the search screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SearchUserPage()),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -136,13 +161,4 @@ class _CoachHomePageState extends State<CoachHomePage> {
   }
 }
 
-LinearGradient myLinearGradient() {
-  return const LinearGradient(
-    colors: [
-      Colors.orange,
-      Colors.deepOrangeAccent,
-    ],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-}
+

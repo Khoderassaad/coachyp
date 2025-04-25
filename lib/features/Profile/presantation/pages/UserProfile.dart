@@ -1,4 +1,4 @@
-import 'package:coachyp/Stripe_Payment/Payment_manager.dart';
+import 'package:coachyp/features/Stripe_Payment/Payment_manager.dart';
 import 'package:coachyp/features/Profile/presantation/pages/HelpCenterPage.dart';
 import 'package:coachyp/features/Profile/presantation/pages/MyAccountPage.dart';
 import 'package:coachyp/features/Profile/presantation/pages/SettingsPage.dart';

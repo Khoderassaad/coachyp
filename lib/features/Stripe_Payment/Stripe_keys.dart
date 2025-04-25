@@ -1,4 +1,4 @@
-import 'package:coachyp/Stripe_Payment/Payment_manager.dart';
+import 'package:coachyp/features/Stripe_Payment/Payment_manager.dart';
 
 abstract class ApiKeys{
   static const String publishableKey="pk_test_51RD9pF01t7NWvSWeOtzQWc94cMDdwb1vhvg58VpigpNRxZkyo31t1mnnLX4Kglbetx5kjGitdDFF3NrTXOpjnuah00SnNgAO0t";
