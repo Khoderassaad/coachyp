@@ -18,6 +18,7 @@ class _SearchUserPageState extends State<SearchUserPage> {
   List<Map<String, dynamic>> _searchResults = [];
   List<Map<String, dynamic>> _recentChats = [];
   bool _isLoading = false;
+  bool _isFetchingRecentChats = true; // NEW
 
   @override
   void initState() {
@@ -33,66 +34,67 @@ class _SearchUserPageState extends State<SearchUserPage> {
     return uid1.hashCode <= uid2.hashCode ? '${uid1}_$uid2' : '${uid2}_$uid1';
   }
 
- void fetchRecentChats() async {
-  final currentUid = _auth.currentUser?.uid;
-  if (currentUid == null) return;
+  void fetchRecentChats() async {
+    final currentUid = _auth.currentUser?.uid;
+    if (currentUid == null) return;
 
-  final Set<String> contactUids = {};
-  final List<Map<String, dynamic>> users = [];
+    final Set<String> contactUids = {};
+    final List<Map<String, dynamic>> users = [];
 
-  try {
-    final chatsSnapshot = await _firestore.collection('chats').get();
+    try {
+      final chatsSnapshot = await _firestore.collection('chats').get();
 
-    for (var chatDoc in chatsSnapshot.docs) {
-      final messagesSnapshot = await _firestore
-          .collection('chats')
-          .doc(chatDoc.id)
-          .collection('messages')
-          .orderBy('timestamp', descending: true)
-          .get();
+      for (var chatDoc in chatsSnapshot.docs) {
+        final messagesSnapshot = await _firestore
+            .collection('chats')
+            .doc(chatDoc.id)
+            .collection('messages')
+            .orderBy('timestamp', descending: true)
+            .get();
 
-      for (var message in messagesSnapshot.docs) {
-        final data = message.data();
-        final senderId = data['senderId'];
-        final receiverId = data['receiverId'];
+        for (var message in messagesSnapshot.docs) {
+          final data = message.data();
+          final senderId = data['senderId'];
+          final receiverId = data['receiverId'];
 
-        if (senderId == currentUid || receiverId == currentUid) {
-          final otherUid = senderId == currentUid ? receiverId : senderId;
+          if (senderId == currentUid || receiverId == currentUid) {
+            final otherUid = senderId == currentUid ? receiverId : senderId;
 
-          if (!contactUids.contains(otherUid)) {
-            // 🔍 Try to find in users collection
-            DocumentSnapshot userDoc = await _firestore.collection('users').doc(otherUid).get();
+            if (!contactUids.contains(otherUid)) {
+              DocumentSnapshot userDoc = await _firestore.collection('users').doc(otherUid).get();
 
-            // 🔁 If not found in users, try coaches
-            if (!userDoc.exists) {
-              userDoc = await _firestore.collection('coaches').doc(otherUid).get();
-            }
+              if (!userDoc.exists) {
+                userDoc = await _firestore.collection('coaches').doc(otherUid).get();
+              }
 
-            if (userDoc.exists && userDoc.data() != null) {
-              final userData = userDoc.data()! as Map<String, dynamic>;
+              if (userDoc.exists && userDoc.data() != null) {
+                final userData = userDoc.data()! as Map<String, dynamic>;
 
-              users.add({
-                'uid': otherUid,
-                'username': userData['username'] ?? 'Unknown',
-                'role': userData['role'] ?? 'user',
-              });
+                users.add({
+                  'uid': otherUid,
+                  'username': userData['username'] ?? 'Unknown',
+                  'role': userData['role'] ?? 'user',
+                });
 
-              contactUids.add(otherUid);
+                contactUids.add(otherUid);
+              }
             }
           }
         }
       }
+
+      setState(() {
+        _recentChats = users;
+        _isFetchingRecentChats = false; // stop loading
+      });
+      print("✅ Recent chats loaded: ${users.length}");
+    } catch (e) {
+      print('❌ Error fetching recent chats: $e');
+      setState(() {
+        _isFetchingRecentChats = false; // stop loading even if error
+      });
     }
-
-    setState(() {
-      _recentChats = users;
-    });
-    print("✅ Recent chats loaded: ${users.length}");
-  } catch (e) {
-    print('❌ Error fetching recent chats: $e');
   }
-}
-
 
   void searchUsers() async {
     setState(() {
@@ -247,7 +249,7 @@ class _SearchUserPageState extends State<SearchUserPage> {
               ),
             ),
           ),
-          if (_isLoading)
+          if (_isLoading || _isFetchingRecentChats)
             const Expanded(child: Center(child: CircularProgressIndicator()))
           else if (!isTyping && _recentChats.isNotEmpty)
             Expanded(

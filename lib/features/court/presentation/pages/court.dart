@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:coachyp/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,16 +7,16 @@ import 'package:http/http.dart' as http;
 
 class SportCourtFinder extends StatefulWidget {
   @override
-  SportCourtFinderState createState() => SportCourtFinderState();
+  _SportCourtFinderState createState() => _SportCourtFinderState();
 }
 
-class SportCourtFinderState extends State<SportCourtFinder> {
+class _SportCourtFinderState extends State<SportCourtFinder> {
   GoogleMapController? _mapController; //Controls the Google Map 
   late LatLng _currentPosition; //	Stores the user's current GPS location
-  String _selectedSport = 'Football';// 	Current selected sport
+  String _selectedSport = '';// 	Current selected sport
   Set<Marker> _markers = {}; // Map markers for nearby courts
   Set<Polyline> _polylines = {}; // Added for routes
-  final List<String> _sports = ['Football', 'Basketball', 'Tennis'];
+  final List<String> _sports = ['Football', 'Basketball', 'Tennis', 'Gym', 'Swimming'];
   bool _isLoading = false;  // Whether data is loading (not used in current UI)
   TextEditingController _searchController = TextEditingController(); //Controls the text in the search bar
   FocusNode _searchFocusNode = FocusNode(); // Used to detect focus on the search field
@@ -106,9 +105,23 @@ class SportCourtFinderState extends State<SportCourtFinder> {
       _selectedDestination = null;
     });
     
-    final keyword = "$sport court";
+    // Customize search keywords for different sports
+    String keyword;
+    String type = ""; // Add type parameter for more specific filtering
+    String excludeTerms = ""; // Add exclude terms to filter out undesired results
+    
+    if (sport == 'Swimming') {
+      keyword = "swimming pool";
+    } else if (sport == 'Gym') {
+      keyword = "fitness center|fitness club|gym";
+      type = "&type=gym"; // Use the gym type specifically
+      excludeTerms = "&excludeterms=clothing store shop retail apparel";
+    } else {
+      keyword = "$sport court";
+    }
+    
     final url =
-        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition.latitude},${_currentPosition.longitude}&radius=5000&keyword=$keyword&key=$googleApiKey";
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentPosition.latitude},${_currentPosition.longitude}&radius=5000&keyword=$keyword$type$excludeTerms&key=$googleApiKey";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -118,7 +131,26 @@ class SportCourtFinderState extends State<SportCourtFinder> {
         final List results = data['results'];
         Set<Marker> newMarkers = {};
         
-        for (var result in results) {
+        // Additional filtering to remove retail stores
+        var filteredResults = results.where((result) {
+          String name = result['name'].toString().toLowerCase();
+          List<String> types = List<String>.from(result['types'] ?? []);
+          
+          // Filter out places that are likely retail stores
+          bool isRetailStore = types.contains('store') || 
+                              types.contains('clothing_store') || 
+                              name.contains('store') || 
+                              name.contains('shop') || 
+                              name.contains('retail') || 
+                              name.contains('outlet');
+                              
+          if (sport == 'Gym') {
+            return !isRetailStore;
+          }
+          return true;
+        }).toList();
+        
+        for (var result in filteredResults) {
           final location = result['geometry']['location'];
           final name = result['name'];
           final latLng = LatLng(location['lat'], location['lng']);
@@ -130,8 +162,14 @@ class SportCourtFinderState extends State<SportCourtFinder> {
             markerIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
           } else if (sport == 'Basketball') {
             markerIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
-          } else {
+          } else if (sport == 'Tennis') {
             markerIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow);
+          } else if (sport == 'Gym') {
+            markerIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+          } else if (sport == 'Swimming') {
+            markerIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
+          } else {
+            markerIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
           }
 
           newMarkers.add(
@@ -157,9 +195,24 @@ class SportCourtFinderState extends State<SportCourtFinder> {
         });
         
         if (newMarkers.isEmpty) {
-          _showMessage('No ${sport.toLowerCase()} courts found nearby');
+          // Customize messages for different sports
+          if (sport == 'Swimming') {
+            _showMessage('No swimming pools found nearby');
+          
+          } else if (sport == 'Gym') {
+            _showMessage('No gyms found nearby');
+          } else {
+            _showMessage('No ${sport.toLowerCase()} courts found nearby');
+          }
         } else {
-          _showMessage('Found ${newMarkers.length} ${sport.toLowerCase()} courts nearby');
+          // Customize messages for different sports
+          if (sport == 'Swimming') {
+            _showMessage('Found ${newMarkers.length} swimming pools nearby');
+          } else if (sport == 'Gym') {
+            _showMessage('Found ${newMarkers.length} gyms nearby');
+          } else {
+            _showMessage('Found ${newMarkers.length} ${sport.toLowerCase()} courts nearby');
+          }
         }
       } else {
         _showError('Failed to fetch places: ${data['status']}');
@@ -310,10 +363,9 @@ class SportCourtFinderState extends State<SportCourtFinder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        title: Text('Sport Court Finder',style: TextStyle(color: Colors.white),),
+        title: Text('Sport Court Finder'),
         elevation: 0,
-        backgroundColor: AppColors.s2,
+        backgroundColor: Colors.blue,
       ),
       body: Stack(
         children: [
@@ -401,7 +453,11 @@ class SportCourtFinderState extends State<SportCourtFinder> {
                                       children: [
                                         Icon(
                                           sport == 'Football' ? Icons.sports_soccer :
-                                          sport == 'Basketball' ? Icons.sports_basketball : Icons.sports_tennis,
+                                          sport == 'Basketball' ? Icons.sports_basketball : 
+                                          sport == 'Tennis' ? Icons.sports_tennis :
+                                          sport == 'Gym' ? Icons.fitness_center :
+                                          sport == 'Swimming' ? Icons.pool :
+                                          Icons.sports,
                                           color: Colors.grey.shade700,
                                         ),
                                         SizedBox(width: 12),

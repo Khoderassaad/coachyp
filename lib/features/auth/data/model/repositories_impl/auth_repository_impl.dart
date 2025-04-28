@@ -47,12 +47,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> registerCoachWithDocument(
-      UserEntity user, File documentFile) async {
-    final credential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+Future<void> registerCoachWithDocument(UserEntity user, File documentFile) async {
+  try {
+    final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: user.email,
-      password: user.password!, // add password to entity if needed
+      password: user.password!, 
     );
 
     final storageRef = FirebaseStorage.instance.ref(
@@ -78,7 +77,14 @@ class AuthRepositoryImpl implements AuthRepository {
     });
 
     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+    
+    print('✅ Coach user successfully registered and uploaded to Firestore.');
+  } catch (e) {
+    print('🔥 Error while uploading coach user: $e');
+    rethrow; // Also rethrow if you want to handle it outside
   }
+}
+
 
   @override
   Future<UserEntity> loginUser(String email, String password) async {

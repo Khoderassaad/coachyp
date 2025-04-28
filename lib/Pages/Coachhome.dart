@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coachyp/Pages/Sportschooser.dart';
 import 'package:coachyp/colors.dart';
-import 'package:coachyp/features/court/presentation/pages/court.dart';
 import 'package:coachyp/features/chat/data/search_user_page.dart';
+import 'package:coachyp/features/court/presentation/pages/court.dart';
+import 'package:coachyp/features/posts/domain/entities/post.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class CoachHomePage extends StatefulWidget {
   const CoachHomePage({super.key});
@@ -16,36 +15,73 @@ class CoachHomePage extends StatefulWidget {
 }
 
 class _CoachHomePageState extends State<CoachHomePage> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  int _subscriberCount = 0;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  List<Post> posts = []; // List to store posts
 
   @override
   void initState() {
     super.initState();
-    _fetchSubscriberCount();
+    _fetchUserPosts();
   }
 
-  Future<void> _fetchSubscriberCount() async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('subscriptions')
-          .get();
-
-      setState(() {
-        _subscriberCount = snapshot.docs.length;
-      });
-    } catch (e) {
-      debugPrint("Error fetching subscriber count: $e");
+  // Fetch user's posts from Firestore
+  Future<void> _fetchUserPosts() async {
+  try {
+    final user = _auth.currentUser;
+    if (user == null) {
+      print("No user is logged in.");
+      return; // Exit early if the user is not logged in
     }
+
+    final userId = user.uid;
+    print("Fetching posts for user ID: $userId");
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('coachId', isEqualTo: userId)
+        .get();
+
+    // Check if posts are fetched
+    print("Fetched posts count: ${querySnapshot.docs.length}");
+
+    final fetchedPosts = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+
+      // Safely handle possible null for availableDates
+      final availableDatesData = data['availableDates'] ?? {};  // Default to an empty map if null
+
+      // Ensure availableDates is a Map<String, List<String>>
+      final availableDates = Map<String, List<String>>.from(
+        availableDatesData.map((key, value) => MapEntry(key, List<String>.from(value))),
+      );
+
+      return Post(
+        id: doc.id,
+        coachId: data['coachId'],
+        description: data['description'],
+        imageUrl: data['imageUrl'] ?? '',
+        timestamp: data['timestamp'].toDate(),
+        availableDates: availableDates,
+        username: data['username'] ?? '',
+        type: data['type'] ?? '',
+        profileImgUrl: data['profileImgUrl'] ?? '', likes: [],
+      );
+    }).toList();
+
+    setState(() {
+      posts = fetchedPosts;
+    });
+  } catch (e) {
+    print("Error fetching posts: $e");
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-       appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: ShaderMask(
           shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
@@ -63,9 +99,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
           child: IconButton(
             icon: const Icon(LineIcons.cog),
             onPressed: () {
-             
-
-             
+              // Add settings functionality here
             },
           ),
         ),
@@ -86,72 +120,77 @@ class _CoachHomePageState extends State<CoachHomePage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Subscribers',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            SizedBox(height: 20),
+            // Subscription Button
+            SizedBox(
+              width: double.infinity,
+              height: 200,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to Subscription Page
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.s2,
+                  textStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  Text(
-                    '$_subscriberCount',
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ],
+                ),
+                child: const Text('Subscription', style: TextStyle(color: AppColors.primary)),
               ),
             ),
-            const SizedBox(height: 16),
-            ShaderMask(
-              shaderCallback: (bounds) => myLinearGradient().createShader(bounds),
-              child: const Text(
-                'Work Calendar',
-                style: TextStyle(
-                  color: Colors.amberAccent,
-                  fontSize: 28,
-                  fontFamily: 'Jersey15',
+            const SizedBox(height: 30),
+
+            // My Posts Button
+            SizedBox(
+              width: double.infinity,
+              height: 200,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to My Posts Page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyPostsPage(posts: posts),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.s2,
+                  textStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
+                child: const Text('My Posts', style: TextStyle(color: AppColors.primary)),
               ),
             ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+            const SizedBox(height: 30),
+
+            // Nearby Court Button
+            SizedBox(
+              width: double.infinity,
+              height: 200,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to Nearby Court
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => SportCourtFinder()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.s2,
+                  textStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2020, 1, 1),
-                  lastDay: DateTime.utc(2030, 12, 31),
-                  focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) {
-                    return isSameDay(_selectedDay, day);
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      _selectedDay = selectedDay;
-                      _focusedDay = focusedDay;
-                    });
-                  },
-                  calendarFormat: _calendarFormat,
-                  onFormatChanged: (format) {
-                    setState(() {
-                      _calendarFormat = format;
-                    });
-                  },
-                  onPageChanged: (focusedDay) {
-                    _focusedDay = focusedDay;
-                  },
-                ),
+                child: const Text('Nearby Court', style: TextStyle(color: AppColors.primary)),
               ),
             ),
           ],
@@ -161,4 +200,91 @@ class _CoachHomePageState extends State<CoachHomePage> {
   }
 }
 
+class MyPostsPage extends StatelessWidget {
+  final List<Post> posts;
+  const MyPostsPage({super.key, required this.posts});
+
+  // Function to handle post deletion by setting isActive to false
+  Future<void> _deletePost(String postId) async {
+    try {
+      final postRef = FirebaseFirestore.instance.collection('posts').doc(postId);
+      await postRef.update({
+        'isActive': false,  // Mark post as inactive
+      });
+      print("Post with ID $postId marked as inactive.");
+    } catch (e) {
+      print("Error deleting post: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Filter out posts where isActive is false
+    final activePosts = posts.where((post) => post.isActive).toList();
+
+    // Debugging output
+    print("Number of active posts to display: ${activePosts.length}");
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Posts'),
+        backgroundColor: AppColors.primary,
+      ),
+      body: activePosts.isEmpty
+          ? const Center(child: Text('No active posts available'))
+          : ListView.builder(
+              itemCount: activePosts.length,
+              itemBuilder: (context, index) {
+                final post = activePosts[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              post.username,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            // Popup menu with delete option
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'delete') {
+                                  _deletePost(post.id); // Call delete post function
+                                }
+                              },
+                              itemBuilder: (context) {
+                                return [
+                                  const PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: Text('Delete Post'),
+                                  ),
+                                ];
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(post.description),
+                        const SizedBox(height: 10),
+                        Text('Available Dates:'),
+                        for (var entry in post.availableDates.entries)
+                          Text('${entry.key}: ${entry.value.join(', ')}'),
+                        const SizedBox(height: 10),
+                        post.imageUrl.isNotEmpty
+                            ? Image.network(post.imageUrl)
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
 

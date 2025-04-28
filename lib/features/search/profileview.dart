@@ -1,3 +1,4 @@
+import 'package:coachyp/features/search/builder/CoachPostsListWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -11,16 +12,14 @@ class OtherProfilePage extends StatefulWidget {
   State<OtherProfilePage> createState() => _OtherProfilePageState();
 }
 
-class _OtherProfilePageState extends State<OtherProfilePage>
-    with SingleTickerProviderStateMixin {
+class _OtherProfilePageState extends State<OtherProfilePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final Map<DateTime, int> availability = {
     DateTime.utc(2025, 4, 24): 0,
     DateTime.utc(2025, 4, 25): 2,
     DateTime.utc(2025, 4, 26): 0,
     DateTime.utc(2025, 4, 27): 4,
   };
-
-  late TabController _tabController;
 
   @override
   void initState() {
@@ -82,8 +81,7 @@ class _OtherProfilePageState extends State<OtherProfilePage>
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -94,8 +92,7 @@ class _OtherProfilePageState extends State<OtherProfilePage>
                               ? NetworkImage(profileUrl)
                               : null,
                           child: profileUrl.isEmpty
-                              ? const Icon(Icons.person,
-                                  size: 60, color: Colors.white)
+                              ? const Icon(Icons.person, size: 60, color: Colors.white)
                               : null,
                         ),
                         const SizedBox(height: 16),
@@ -124,10 +121,9 @@ class _OtherProfilePageState extends State<OtherProfilePage>
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // TODO: message logic
+                              // TODO: implement messaging
                             },
-                            icon:
-                                const Icon(Icons.message, color: Colors.white),
+                            icon: const Icon(Icons.message, color: Colors.white),
                             label: const Text('Send Message',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 16)),
@@ -151,68 +147,18 @@ class _OtherProfilePageState extends State<OtherProfilePage>
                               TabBar(
                                 controller: _tabController,
                                 tabs: const [
-                                  Tab(
-                                      icon: Icon(Icons.calendar_today,
-                                          color: Colors.black)),
-                                  Tab(
-                                      icon: Icon(Icons.grid_on,
-                                          color: Colors.black)),
+                                  Tab(icon: Icon(Icons.grid_on, color: Colors.black)),
+                                  Tab(icon: Icon(Icons.calendar_today, color: Colors.black)),
                                 ],
                                 indicatorColor: AppColors.s2,
                               ),
                               SizedBox(
-                                height: 400,
+                                height: 400, // Fix height for TabBarView
                                 child: TabBarView(
                                   controller: _tabController,
                                   children: [
-                                    // Schedule Tab
-                                    Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: TableCalendar(
-                                        firstDay: DateTime.utc(2025, 1, 1),
-                                        lastDay: DateTime.utc(2025, 12, 31),
-                                        focusedDay: DateTime.now(),
-                                        calendarBuilders: CalendarBuilders(
-                                          defaultBuilder:
-                                              (context, day, focusedDay) {
-                                            final cleanDay = DateTime.utc(
-                                                day.year, day.month, day.day);
-                                            final slots =
-                                                availability[cleanDay];
-                                            Color? bgColor;
-
-                                            if (slots == 0) {
-                                              bgColor = Colors.red;
-                                            } else if (slots != null &&
-                                                slots > 0) {
-                                              bgColor = Colors.green;
-                                            }
-
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: bgColor,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                '${day.day}',
-                                                style: TextStyle(
-                                                  color: bgColor != null
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    // Posts Tab
-                                    const Center(
-                                      child: Text("No posts yet.",
-                                          style:
-                                              TextStyle(color: Colors.black54)),
-                                    ),
+                                    _buildPostsTab(),
+                                    _buildCalendarTab(),
                                   ],
                                 ),
                               ),
@@ -224,6 +170,50 @@ class _OtherProfilePageState extends State<OtherProfilePage>
                   ),
                 ),
               ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // 🔥 Posts Tab Builder
+  Widget _buildPostsTab() {
+    return CoachPostsListWidget(coachId: widget.userId);
+  }
+
+  // 🔥 Calendar Tab Builder
+  Widget _buildCalendarTab() {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: TableCalendar(
+        firstDay: DateTime.utc(2025, 1, 1),
+        lastDay: DateTime.utc(2025, 12, 31),
+        focusedDay: DateTime.now(),
+        calendarBuilders: CalendarBuilders(
+          defaultBuilder: (context, day, focusedDay) {
+            final cleanDay = DateTime.utc(day.year, day.month, day.day);
+            final slots = availability[cleanDay];
+            Color? bgColor;
+
+            if (slots == 0) {
+              bgColor = Colors.red;
+            } else if (slots != null && slots > 0) {
+              bgColor = Colors.green;
+            }
+
+            return Container(
+              decoration: BoxDecoration(
+                color: bgColor,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '${day.day}',
+                style: TextStyle(
+                  color: bgColor != null ? Colors.white : Colors.black,
+                ),
+              ),
             );
           },
         ),

@@ -126,9 +126,9 @@ class _CoachSignUpState extends State<CoachSignUp> {
                       ),
                       items: const [
                         DropdownMenuItem(value: 'Football Coach', child: Text('Football Coach')),
-                        DropdownMenuItem(value: 'Bascketball Coach', child: Text('bascketball Coach')),
+                        DropdownMenuItem(value: 'Basketball Coach', child: Text('bascketball Coach')),
                         DropdownMenuItem(value: 'Swimming Coach', child: Text('Swimming Coach')),
-                        DropdownMenuItem(value: 'tennis Coach', child: Text('tennis Coach')),
+                        DropdownMenuItem(value: 'Tennis Coach', child: Text('tennis Coach')),
                         DropdownMenuItem(value: 'Fitness Coach', child: Text('Fitness Coach')),
                       ],
                     ),
